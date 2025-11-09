@@ -1,0 +1,39 @@
+﻿@model IEnumerable<HRMS.ViewModels.UserWithRolesViewModel>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h2>User Management</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>@user.UserName</td>
+                
+                <td>@user.Email</td>
+                <td>@user.Roles</td>
+
+                <td>
+                    <a class="btn btn-primary" 
+                       asp-action="ManageRoles" 
+                       asp-route-userId="@user.UserId">
+                       Manage Roles
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
