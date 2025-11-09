@@ -1,0 +1,133 @@
+﻿@model HRMS.ViewModels.Employee.EmployeeEditBasicInfoViewModel
+
+@{
+    ViewData["Title"] = "Modify my personal";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="text-warning">
+                <i class="fas fa-user-edit"></i> Modify my personal 
+            </h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="MyProfile" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to my profile
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Note:</strong> You can only modify your basic data. For other modifications, please contact the Human Resources Department.
+            </div>
+
+            <form asp-action="EditBasicInfo" method="post">
+                <input type="hidden" asp-for="EmployeeID" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Editable data-->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <h5 class="text-primary border-bottom pb-2">
+                            <i class="fas fa-edit"></i> Editable data
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FirstName" class="form-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="LastName" class="form-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Address" class="form-label"></label>
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+                </div>
+
+             
+                <div class="row mb-3 mt-4">
+                    <div class="col-md-12">
+                        <h5 class="text-muted border-bottom pb-2">
+                            <i class="fas fa-lock"></i>Non-editable data
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" value="@Model.Email" readonly />
+                        <small class="form-text text-muted">
+                            <i class="fas fa-lock"></i> Email cannot be modified
+                        </small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Hiring Date</label>
+                        <input type="text" class="form-control" value="@Model.HireDate.ToString("dd/MM/yyyy")" readonly />
+                        <small class="form-text text-muted">
+                            <i class="fas fa-lock"></i> The Hiring date cannot be modified
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" value="@Model.DepartmentName" readonly />
+                        <small class="form-text text-muted">
+                            <i class="fas fa-lock"></i> The section cannot be modified
+                        </small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Job Title</label>
+                        <input type="text" class="form-control" value="@Model.JobTitleName" readonly />
+                        <small class="form-text text-muted">
+                            <i class="fas fa-lock"></i> Job title cannot be modified
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-warning btn-lg text-white">
+                            <i class="fas fa-save"></i>Save Changes
+                        </button>
+                        <a asp-action="MyProfile" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

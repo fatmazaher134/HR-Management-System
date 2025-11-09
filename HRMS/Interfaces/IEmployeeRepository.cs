@@ -9,11 +9,8 @@ namespace HRMS.Interfaces;
 
 public interface IEmployeeRepository : IGenericRepository<Employee>
 {
-<<<<<<< HEAD
-
     Task<IEnumerable<Employee>> GetActiveEmployeesAsync();
     Task SoftDeleteAsync(int employeeId);
-=======
+
     Task<IEnumerable<Employee>> GetEmployeesByDepartmentAsync(int departmentId);
->>>>>>> origin/test
 }

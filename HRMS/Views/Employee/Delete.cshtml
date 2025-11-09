@@ -1,4 +1,146 @@
-﻿@page
-@model HRMS.Views.Employee.DeleteModel
+﻿@model HRMS.ViewModels.Employee.EmployeeDetailsViewModel
+
 @{
+    ViewData["Title"] = "Delete Employee";
 }
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="text-danger">
+                <i class="fas fa-exclamation-triangle"></i> Confirm employee deletion
+
+            </h2>
+        </div>
+    </div>
+
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">
+            <i class="fas fa-exclamation-circle"></i> Warning!
+        </h4>
+        <p class="mb-0">
+            You are about to delete employee data. This action will deactivate the employee (Soft Delete) and not permanently delete him from the database.
+        </p>
+    </div>
+
+    <div class="card shadow border-danger">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-user"></i> Employee data to be deleted
+
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th width="40%">
+                                    <i class="fas fa-hashtag text-muted"></i> Employee ID:
+                                </th>
+                                <td><strong>@Model.EmployeeID</strong></td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-user text-muted"></i> Full Name:
+                                </th>
+                                <td><strong class="text-danger">@Model.FullName</strong></td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-envelope text-muted"></i> Email:
+                                </th>
+                                <td>@Model.Email</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-phone text-muted"></i> Phone:
+                                </th>
+                                <td>@(Model.PhoneNumber ?? "unspecified")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th width="40%">
+                                    <i class="fas fa-building text-muted"></i> Department:
+                                </th>
+                                <td>
+                                    <span class="badge bg-info">@Model.DepartmentName</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-user-tie text-muted"></i> Job Title:
+                                </th>
+                                <td>
+                                    <span class="badge bg-secondary">@Model.JobTitleName</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-calendar-plus text-muted"></i> Hiring Date:
+                                </th>
+                                <td>@Model.HireDate.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-clock text-muted"></i> Hiring Period:
+                                </th>
+                                <td>
+                                    <span class="badge bg-primary">@Model.YearsOfService Year</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mt-4 border-warning">
+        <div class="card-body">
+            <h5 class="text-warning">
+                <i class="fas fa-info-circle"></i> What will happen when deleted?
+
+            </h5>
+            <ul class="mb-0">
+                <li>
+                    The employee's status will be changed to "Inactive"
+                </li>
+                <li>
+                    The employee will not appear in the main lists
+                </li>
+                <li>
+                    All historical records and data will remain preserved
+
+                </li>
+                <li>The employee can be recovered later by the system administrator</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <form asp-action="Delete" method="post">
+                <input type="hidden" name="id" value="@Model.EmployeeID" />
+
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="fas fa-trash"></i> Yes , Delete it
+                </button>
+
+                <a asp-action="Details" asp-route-id="@Model.EmployeeID" class="btn btn-info btn-lg">
+                    <i class="fas fa-eye"></i> Show Details
+                </a>
+
+                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
