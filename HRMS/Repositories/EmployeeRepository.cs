@@ -45,4 +45,3 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
             .ToListAsync();
     }
 }
-

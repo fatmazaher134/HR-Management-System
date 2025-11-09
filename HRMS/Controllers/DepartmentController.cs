@@ -1,8 +1,7 @@
-﻿using HRMS.Interfaces.Services; // <-- التأكد من وجودها
+﻿using HRMS.Interfaces.Services; 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-// قد تحتاج لإضافة using لنطاق الأسماء (namespace) الخاص بـ DepartmentViewModel و DepartmentFormViewModel إذا لم يكن موجوداً
 
 namespace HRMS.Controllers
 {
