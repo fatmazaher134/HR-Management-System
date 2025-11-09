@@ -19,7 +19,6 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
         _context = context;
     }
 
-<<<<<<< HEAD
     public async Task<IEnumerable<Employee>> GetActiveEmployeesAsync()
     {
         return await _context.Employees
@@ -41,15 +40,4 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
         }
     }
 
-    }
-=======
-    public async Task<IEnumerable<Employee>> GetEmployeesByDepartmentAsync(int departmentId)
-    {
-        
-        return await _dbSet
-            .Where(e => e.DepartmentID == departmentId)
-            .ToListAsync();
-    }
 }
->>>>>>> origin/test
-
