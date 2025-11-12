@@ -101,6 +101,7 @@ namespace HRMS.Controllers
 
 
         [Authorize(Roles = "Admin,HR,Employee")]
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var employee = await _employeeServices.GetByIdAsync(id);
@@ -201,7 +202,66 @@ namespace HRMS.Controllers
         }
 
 
-        [Authorize(Roles = "Admin,HR,Employee")]
+        //[Authorize(Roles = "Admin,HR,Employee")]
+        //[HttpGet]
+        //public async Task<IActionResult> Edit(int id)
+        //{
+        //    var employee = await _employeeServices.GetByIdAsync(id);
+
+        //    if (employee == null)
+        //        return NotFound();
+
+        //    // Check Authority
+        //    if (User.IsInRole("Employee"))
+        //    {
+        //        var currentUserId = GetCurrentUserId();
+        //        if (employee.UserId != currentUserId)
+        //        {
+        //            return Forbid();
+        //        }
+
+        //        //Emp Edit Basic info
+        //        var basicModel = new EmployeeEditBasicInfoViewModel
+        //        {
+        //            EmployeeID = employee.EmployeeID,
+        //            FirstName = employee.FirstName,
+        //            LastName = employee.LastName,
+        //            PhoneNumber = employee.PhoneNumber,
+        //            Address = employee.Address,
+        //            Email = employee.Email,
+        //            DepartmentName = employee.Department?.DepartmentName,
+        //            JobTitleName = employee.JobTitle?.TitleName,
+        //            HireDate = employee.HireDate
+        //        };
+
+        //        return View("EditBasicInfo", basicModel);
+        //    }
+
+        //    // Admin & HR Can Edit on All
+        //    var (departments, jobTitles, users) = await GetSelectListsAsync();
+
+        //    var model = new EmployeeFormViewModel
+        //    {
+        //        EmployeeID = employee.EmployeeID,
+        //        FirstName = employee.FirstName,
+        //        LastName = employee.LastName,
+        //        Email = employee.Email,
+        //        PhoneNumber = employee.PhoneNumber,
+        //        Address = employee.Address,
+        //        DateOfBirth = employee.DateOfBirth,
+        //        HireDate = employee.HireDate,
+        //        BasicSalary = employee.BasicSalary,
+        //        DepartmentID = employee.DepartmentID,
+        //        JobTitleID = employee.JobTitleID,
+        //        UserId = employee.UserId,
+        //        DepartmentList = departments,
+        //        JobTitleList = jobTitles,
+        //        UserList = users
+        //    };
+
+        //    return View(model);
+        //}
+        [Authorize(Roles = "Admin,HR,Employee")]  //  السماح للجميع
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -210,13 +270,13 @@ namespace HRMS.Controllers
             if (employee == null)
                 return NotFound();
 
-            // Check Authority
+            //  Check: هل الموظف يحاول يعدل بيانات غيره؟
             if (User.IsInRole("Employee"))
             {
                 var currentUserId = GetCurrentUserId();
                 if (employee.UserId != currentUserId)
                 {
-                    return Forbid();
+                    return Forbid(); 
                 }
 
                 //Emp Edit Basic info
@@ -261,7 +321,8 @@ namespace HRMS.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        
+        [Authorize(Roles = "Admin,HR")]  
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EmployeeFormViewModel model)
@@ -278,7 +339,7 @@ namespace HRMS.Controllers
                 return View(model);
             }
 
-
+            //  Check: Email مش متكرر
             if (await _employeeServices.IsEmailExistsAsync(model.Email, model.EmployeeID))
             {
                 ModelState.AddModelError("Email", "Email already exists");
@@ -322,8 +383,7 @@ namespace HRMS.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Employee")]  
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBasicInfo(int id, EmployeeEditBasicInfoViewModel model)
@@ -348,13 +408,108 @@ namespace HRMS.Controllers
 
             if (!updated)
             {
-                ModelState.AddModelError("", "An error occurred during the");
+                ModelState.AddModelError("", "An error occurred during the update");
                 return View(model);
             }
 
             TempData["Success"] = "Your data has been updated successfully";
             return RedirectToAction(nameof(MyProfile));
         }
+
+        //[Authorize(Roles = "Admin,HR,Employee")]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, EmployeeFormViewModel model)
+        //{
+        //    if (id != model.EmployeeID)
+        //        return BadRequest();
+
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var (departments, jobTitles, users) = await GetSelectListsAsync();
+        //        model.DepartmentList = departments;
+        //        model.JobTitleList = jobTitles;
+        //        model.UserList = users;
+        //        return View(model);
+        //    }
+
+
+        //    if (await _employeeServices.IsEmailExistsAsync(model.Email, model.EmployeeID))
+        //    {
+        //        ModelState.AddModelError("Email", "Email already exists");
+        //        var (departments, jobTitles, users) = await GetSelectListsAsync();
+        //        model.DepartmentList = departments;
+        //        model.JobTitleList = jobTitles;
+        //        model.UserList = users;
+        //        return View(model);
+        //    }
+
+        //    var employee = new Employee
+        //    {
+        //        EmployeeID = model.EmployeeID,
+        //        FirstName = model.FirstName,
+        //        LastName = model.LastName,
+        //        Email = model.Email,
+        //        PhoneNumber = model.PhoneNumber,
+        //        Address = model.Address,
+        //        DateOfBirth = model.DateOfBirth,
+        //        HireDate = model.HireDate,
+        //        BasicSalary = model.BasicSalary,
+        //        DepartmentID = model.DepartmentID,
+        //        JobTitleID = model.JobTitleID,
+        //        UserId = model.UserId,
+        //        IsActive = true
+        //    };
+
+        //    var updated = await _employeeServices.UpdateAsync(employee);
+
+        //    if (!updated)
+        //    {
+        //        ModelState.AddModelError("", "An error occurred during the update");
+        //        var (departments, jobTitles, users) = await GetSelectListsAsync();
+        //        model.DepartmentList = departments;
+        //        model.JobTitleList = jobTitles;
+        //        model.UserList = users;
+        //        return View(model);
+        //    }
+
+        //    TempData["Success"] = "Employee data has been updated successfully";
+        //    return RedirectToAction(nameof(Index));
+        //}
+
+
+        //[Authorize(Roles = "Employee")]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EditBasicInfo(int id, EmployeeEditBasicInfoViewModel model)
+        //{
+        //    if (id != model.EmployeeID)
+        //        return BadRequest();
+
+        //    var employee = await _employeeServices.GetByIdAsync(id);
+        //    if (employee == null)
+        //        return NotFound();
+
+        //    var currentUserId = GetCurrentUserId();
+        //    if (employee.UserId != currentUserId)
+        //    {
+        //        return Forbid();
+        //    }
+
+        //    if (!ModelState.IsValid)
+        //        return View(model);
+
+        //    var updated = await _employeeServices.UpdateBasicInfoAsync(id, model);
+
+        //    if (!updated)
+        //    {
+        //        ModelState.AddModelError("", "An error occurred during the");
+        //        return View(model);
+        //    }
+
+        //    TempData["Success"] = "Your data has been updated successfully";
+        //    return RedirectToAction(nameof(MyProfile));
+        //}
 
 
         [Authorize(Roles = "Admin,HR")]
@@ -397,7 +552,7 @@ namespace HRMS.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "Employee,HR")]
+        [Authorize(Roles = "Employee,HR,Admin")]
         public async Task<IActionResult> MyProfile()
         {
             var currentUserId = GetCurrentUserId();
@@ -405,8 +560,8 @@ namespace HRMS.Controllers
 
             if (employee == null)
             {
-                TempData["Error"] = "Employee Data Not ound";
-                return RedirectToAction("Index", "Home");
+                TempData["Error"] = "Employee Data Not Found";
+                return   RedirectToAction("Index", "Home");
             }
 
             var model = new MyProfileViewModel
