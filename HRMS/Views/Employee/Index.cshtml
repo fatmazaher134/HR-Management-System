@@ -11,11 +11,15 @@
                 <i class="fas fa-users"></i> Employee list
             </h2>
         </div>
-        <div class="col-md-6 text-end">
-            <a asp-action="Create" class="btn btn-success">
+            
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="col-md-6 text-end">
+                <a asp-action="Create" class="btn btn-success">
                 <i class="fas fa-plus"></i> Add New Employee
             </a>
         </div>
+        }
     </div>
 
     @if (TempData["Success"] != null)
