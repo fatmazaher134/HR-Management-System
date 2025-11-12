@@ -1,6 +1,4 @@
-﻿using HRMS.Interfaces.Services;
-using HRMS.Models;
-using HRMS.ViewModels;
+﻿using HRMS.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
