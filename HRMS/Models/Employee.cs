@@ -13,11 +13,6 @@ public class Employee
     [Key]
     public int EmployeeID { get; set; }
 
-    // FK to AspNetUsers (string type because Identity uses GUID strings)
-    [ForeignKey("ApplicationUser")]
-    public string? UserId { get; set; }
-
-
     [Required, MaxLength(100)]
     public required string FirstName { get; set; }
 

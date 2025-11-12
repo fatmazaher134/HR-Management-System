@@ -54,7 +54,7 @@ namespace HRMS.Controllers
             // Users (اللي ملهمش Employee مرتبط بيهم)
             var allUsers = await _userManager.Users.ToListAsync();
             var allEmployees = await _employeeServices.GetAllAsync();
-            var usedUserIds = allEmployees.Where(e => e.UserId != null).Select(e => e.UserId).ToList();
+            var usedUserIds = allEmployees.Where(e => e.ApplicationUserId != null).Select(e => e.ApplicationUserId).ToList();
 
             var availableUsers = allUsers
                 .Where(u => !usedUserIds.Contains(u.Id))
@@ -109,7 +109,7 @@ namespace HRMS.Controllers
             if (User.IsInRole("Employee"))
             {
                 var currentUserId = GetCurrentUserId();
-                if (employee.UserId != currentUserId)
+                if (employee.ApplicationUserId != currentUserId)
                 {
                     return Forbid(); // أو RedirectToAction("AccessDenied", "Account")
                 }
@@ -159,89 +159,101 @@ namespace HRMS.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var (departments, jobTitles, users) = await GetSelectListsAsync();
-                model.DepartmentList = departments;
-                model.JobTitleList = jobTitles;
-                model.UserList = users;
+                var (depts, jobs, usrs) = await GetSelectListsAsync();
+                model.DepartmentList = depts;
+                model.JobTitleList = jobs;
+                model.UserList = usrs;
                 return View(model);
             }
-
 
             if (await _employeeServices.IsEmailExistsAsync(model.Email))
             {
                 ModelState.AddModelError("Email", "The Email is Already Used");
-                var (departments, jobTitles, users) = await GetSelectListsAsync();
-                model.DepartmentList = departments;
-                model.JobTitleList = jobTitles;
-                model.UserList = users;
+                var (depts, jobs, usrs) = await GetSelectListsAsync();
+                model.DepartmentList = depts;
+                model.JobTitleList = jobs;
+                model.UserList = usrs;
                 return View(model);
             }
 
             IdentityResult result = await _employeeServices.RegisterEmployeeAsync(model);
 
-            TempData["Success"] = "Employee Added Successfully";
-            return RedirectToAction(nameof(Index));
+            if (result.Succeeded)
+            {
+                TempData["Success"] = "Employee Added Successfully";
+                return RedirectToAction(nameof(Index));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            var (departments, jobTitles, users) = await GetSelectListsAsync();
+            model.DepartmentList = departments;
+            model.JobTitleList = jobTitles;
+            model.UserList = users;
+            return View(model);
         }
 
+            //[Authorize(Roles = "Admin,HR,Employee")]
+            //[HttpGet]
+            //public async Task<IActionResult> Edit(int id)
+            //{
+            //    var employee = await _employeeServices.GetByIdAsync(id);
 
-        //[Authorize(Roles = "Admin,HR,Employee")]
-        //[HttpGet]
-        //public async Task<IActionResult> Edit(int id)
-        //{
-        //    var employee = await _employeeServices.GetByIdAsync(id);
+            //    if (employee == null)
+            //        return NotFound();
 
-        //    if (employee == null)
-        //        return NotFound();
+            //    // Check Authority
+            //    if (User.IsInRole("Employee"))
+            //    {
+            //        var currentUserId = GetCurrentUserId();
+            //        if (employee.UserId != currentUserId)
+            //        {
+            //            return Forbid();
+            //        }
 
-        //    // Check Authority
-        //    if (User.IsInRole("Employee"))
-        //    {
-        //        var currentUserId = GetCurrentUserId();
-        //        if (employee.UserId != currentUserId)
-        //        {
-        //            return Forbid();
-        //        }
+            //        //Emp Edit Basic info
+            //        var basicModel = new EmployeeEditBasicInfoViewModel
+            //        {
+            //            EmployeeID = employee.EmployeeID,
+            //            FirstName = employee.FirstName,
+            //            LastName = employee.LastName,
+            //            PhoneNumber = employee.PhoneNumber,
+            //            Address = employee.Address,
+            //            Email = employee.Email,
+            //            DepartmentName = employee.Department?.DepartmentName,
+            //            JobTitleName = employee.JobTitle?.TitleName,
+            //            HireDate = employee.HireDate
+            //        };
 
-        //        //Emp Edit Basic info
-        //        var basicModel = new EmployeeEditBasicInfoViewModel
-        //        {
-        //            EmployeeID = employee.EmployeeID,
-        //            FirstName = employee.FirstName,
-        //            LastName = employee.LastName,
-        //            PhoneNumber = employee.PhoneNumber,
-        //            Address = employee.Address,
-        //            Email = employee.Email,
-        //            DepartmentName = employee.Department?.DepartmentName,
-        //            JobTitleName = employee.JobTitle?.TitleName,
-        //            HireDate = employee.HireDate
-        //        };
+            //        return View("EditBasicInfo", basicModel);
+            //    }
 
-        //        return View("EditBasicInfo", basicModel);
-        //    }
+            //    // Admin & HR Can Edit on All
+            //    var (departments, jobTitles, users) = await GetSelectListsAsync();
 
-        //    // Admin & HR Can Edit on All
-        //    var (departments, jobTitles, users) = await GetSelectListsAsync();
+            //    var model = new EmployeeFormViewModel
+            //    {
+            //        EmployeeID = employee.EmployeeID,
+            //        FirstName = employee.FirstName,
+            //        LastName = employee.LastName,
+            //        Email = employee.Email,
+            //        PhoneNumber = employee.PhoneNumber,
+            //        Address = employee.Address,
+            //        DateOfBirth = employee.DateOfBirth,
+            //        HireDate = employee.HireDate,
+            //        BasicSalary = employee.BasicSalary,
+            //        DepartmentID = employee.DepartmentID,
+            //        JobTitleID = employee.JobTitleID,
+            //        UserId = employee.UserId,
+            //        DepartmentList = departments,
+            //        JobTitleList = jobTitles,
+            //        UserList = users
+            //    };
 
-        //    var model = new EmployeeFormViewModel
-        //    {
-        //        EmployeeID = employee.EmployeeID,
-        //        FirstName = employee.FirstName,
-        //        LastName = employee.LastName,
-        //        Email = employee.Email,
-        //        PhoneNumber = employee.PhoneNumber,
-        //        Address = employee.Address,
-        //        DateOfBirth = employee.DateOfBirth,
-        //        HireDate = employee.HireDate,
-        //        BasicSalary = employee.BasicSalary,
-        //        DepartmentID = employee.DepartmentID,
-        //        JobTitleID = employee.JobTitleID,
-        //        UserId = employee.UserId,
-        //        DepartmentList = departments,
-        //        JobTitleList = jobTitles,
-        //        UserList = users
-        //    };
-
-        //    return View(model);
+            //    return View(model);
         //}
         [Authorize(Roles = "Admin,HR,Employee")]  //  السماح للجميع
         [HttpGet]
@@ -256,7 +268,7 @@ namespace HRMS.Controllers
             if (User.IsInRole("Employee"))
             {
                 var currentUserId = GetCurrentUserId();
-                if (employee.UserId != currentUserId)
+                if (employee.ApplicationUserId != currentUserId)
                 {
                     return Forbid(); 
                 }
@@ -294,7 +306,7 @@ namespace HRMS.Controllers
                 BasicSalary = employee.BasicSalary,
                 DepartmentID = employee.DepartmentID,
                 JobTitleID = employee.JobTitleID,
-                UserId = employee.UserId,
+                UserId = employee.ApplicationUserId,
                 DepartmentList = departments,
                 JobTitleList = jobTitles,
                 UserList = users
@@ -345,7 +357,7 @@ namespace HRMS.Controllers
                 BasicSalary = model.BasicSalary,
                 DepartmentID = model.DepartmentID,
                 JobTitleID = model.JobTitleID,
-                UserId = model.UserId,
+                ApplicationUserId = model.UserId,
                 IsActive = true
             };
 
@@ -378,7 +390,7 @@ namespace HRMS.Controllers
                 return NotFound();
 
             var currentUserId = GetCurrentUserId();
-            if (employee.UserId != currentUserId)
+            if (employee.ApplicationUserId != currentUserId)
             {
                 return Forbid();
             }
