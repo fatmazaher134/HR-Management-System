@@ -1,43 +1,129 @@
 ﻿using HRMS.Interfaces.Services;
 using HRMS.Models;
+using HRMS.ViewModels.Employee;
 
 namespace HRMS.Services.Impelmentation
 {
     public class LeaveRequestServices : ILeaveRequestServices
     {
-        public Task<LeaveRequest> AddAsync(LeaveRequest request)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public LeaveRequestServices(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
         }
 
-        public Task<bool> ApproveAsync(int id, int approvedById)
+        public async Task<IEnumerable<LeaveRequestViewModel>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var requests = await _unitOfWork.LeaveRequest.FindAllAsync(
+                includes: new[] { "Employee", "LeaveType" });
+
+            return requests.Select(r => new LeaveRequestViewModel
+            {
+                LeaveRequestID = r.LeaveRequestID,
+                EmployeeName = $"{r.Employee?.FirstName} {r.Employee?.LastName}",
+                LeaveTypeName = r.LeaveType?.TypeName ?? "",
+                StartDate = r.StartDate,
+                EndDate = r.EndDate,
+                Status = r.Status,
+                Comments = r.Comments
+            });
         }
 
-        public Task<bool> CancelAsync(int id)
+        // to spacific HR employee
+        public async Task<IEnumerable<LeaveRequestViewModel>> GetMyRequestsAsync(string userId)
         {
-            throw new NotImplementedException();
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == userId);
+            if (emp == null) return Enumerable.Empty<LeaveRequestViewModel>();
+
+            var requests = await _unitOfWork.LeaveRequest.FindAllAsync(
+                r => r.EmployeeID == emp.EmployeeID,
+                includes: new[] { "LeaveType" });
+
+            return requests.Select(r => new LeaveRequestViewModel
+            {
+                LeaveRequestID = r.LeaveRequestID,
+                LeaveTypeName = r.LeaveType?.TypeName ?? "",
+                StartDate = r.StartDate,
+                EndDate = r.EndDate,
+                Status = r.Status,
+                Comments = r.Comments
+            });
         }
 
-        public Task<IEnumerable<LeaveRequest>> GetAllAsync()
+        public async Task<bool> CreateAsync(CreateLeaveRequestViewModel model, string userId)
         {
-            throw new NotImplementedException();
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == userId);
+            if (emp == null) return false;
+
+            var entity = new LeaveRequest
+            {
+                EmployeeID = emp.EmployeeID,
+                LeaveTypeID = model.LeaveTypeID,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                Comments = model.Comments,
+                Status = "Pending"
+            };
+
+            await _unitOfWork.LeaveRequest.AddAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
-        public Task<IEnumerable<LeaveRequest>> GetByEmployeeIdAsync(int employeeId)
+        public async Task<bool> ApproveAsync(int id, int hrEmployeeId)
         {
-            throw new NotImplementedException();
+            var request = await _unitOfWork.LeaveRequest.GetByIdAsync(id);
+            if (request == null) return false;
+
+            request.Status = "Approved";
+            request.ApprovedByHRID = hrEmployeeId;
+
+            await _unitOfWork.LeaveRequest.UpdateAsync(request);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
-        public Task<LeaveRequest?> GetByIdAsync(int id)
+        public async Task<bool> RejectAsync(int id, int hrEmployeeId, string? comments)
         {
-            throw new NotImplementedException();
+            var request = await _unitOfWork.LeaveRequest.GetByIdAsync(id);
+            if (request == null) return false;
+
+            request.Status = "Rejected";
+            request.Comments = comments;
+            request.ApprovedByHRID = hrEmployeeId;
+
+            await _unitOfWork.LeaveRequest.UpdateAsync(request);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
-        public Task<bool> RejectAsync(int id, string reason)
+        public async Task<bool> CancelAsync(int id, int hrEmployeeId)
         {
-            throw new NotImplementedException();
+            var request = await _unitOfWork.LeaveRequest.GetByIdAsync(id);
+            if (request == null || request.Status != "Pending")
+                return false;
+
+            request.Status = "Cancelled";
+            request.ApprovedByHRID = hrEmployeeId;
+
+            await _unitOfWork.LeaveRequest.UpdateAsync(request);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
+        
+        public async Task<bool> DeleteAsync(int id, string userId)
+        {
+            var request = await _unitOfWork.LeaveRequest
+                .FindAsync(lr => lr.LeaveRequestID == id && lr.Employee.UserId == userId);
+
+            if (request == null)
+                return false;
+
+            await _unitOfWork.LeaveRequest.DeleteAsync(request);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+
     }
 }
