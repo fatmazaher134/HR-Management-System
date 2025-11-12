@@ -194,7 +194,7 @@ namespace HRMS.Services.Impelmentation
             // return emp based on UserId
             var includes = new string[] { "Department", "JobTitle", "ApplicationUser" };
             return await _empRepo.FindAsync(
-                criteria: e => e.UserId == userId && e.IsActive,
+                criteria: e => e.ApplicationUserId == userId && e.IsActive,
                 includes: includes
             );
         }

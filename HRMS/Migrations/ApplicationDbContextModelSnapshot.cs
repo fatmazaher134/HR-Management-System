@@ -210,9 +210,6 @@ namespace HRMS.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("EmployeeID");
 
                     b.HasIndex("ApplicationUserId")
@@ -573,7 +570,7 @@ namespace HRMS.Migrations
                     b.HasOne("HRMS.Models.Employee", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Manager");
                 });

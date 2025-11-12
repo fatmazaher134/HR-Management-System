@@ -23,7 +23,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                       .HasOne(d => d.Manager)
                       .WithMany() 
                       .HasForeignKey(d => d.ManagerID)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.SetNull);
         // cascade loop prevention
 
         modelBuilder.Entity<Employee>()

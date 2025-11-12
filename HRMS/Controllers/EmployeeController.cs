@@ -59,7 +59,7 @@ namespace HRMS.Controllers
             // Users (اللي ملهمش Employee مرتبط بيهم)
             var allUsers = await _userManager.Users.ToListAsync();
             var allEmployees = await _employeeServices.GetAllAsync();
-            var usedUserIds = allEmployees.Where(e => e.UserId != null).Select(e => e.UserId).ToList();
+            var usedUserIds = allEmployees.Where(e => e.ApplicationUserId != null).Select(e => e.ApplicationUserId).ToList();
 
             var availableUsers = allUsers
                 .Where(u => !usedUserIds.Contains(u.Id))
@@ -114,7 +114,7 @@ namespace HRMS.Controllers
             if (User.IsInRole("Employee"))
             {
                 var currentUserId = GetCurrentUserId();
-                if (employee.UserId != currentUserId)
+                if (employee.ApplicationUserId != currentUserId)
                 {
                     return Forbid(); // أو RedirectToAction("AccessDenied", "Account")
                 }
@@ -424,7 +424,7 @@ namespace HRMS.Controllers
                 return NotFound();
 
             var currentUserId = GetCurrentUserId();
-            if (employee.UserId != currentUserId)
+            if (employee.ApplicationUserId != currentUserId)
             {
                 return Forbid();
             }

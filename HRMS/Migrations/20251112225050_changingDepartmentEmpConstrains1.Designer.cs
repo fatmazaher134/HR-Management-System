@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251111175725_addingRelationEmployeeAppUser")]
-    partial class addingRelationEmployeeAppUser
+    [Migration("20251112225050_changingDepartmentEmpConstrains1")]
+    partial class changingDepartmentEmpConstrains1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -212,9 +212,6 @@ namespace HRMS.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("EmployeeID");
 
@@ -576,7 +573,7 @@ namespace HRMS.Migrations
                     b.HasOne("HRMS.Models.Employee", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Manager");
                 });

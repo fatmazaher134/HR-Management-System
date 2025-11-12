@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251112143335_init")]
-    partial class init
+    [Migration("20251112224722_changingDepartmentEmpConstrains")]
+    partial class changingDepartmentEmpConstrains
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -573,7 +573,7 @@ namespace HRMS.Migrations
                     b.HasOne("HRMS.Models.Employee", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Manager");
                 });
