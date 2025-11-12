@@ -51,8 +51,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         .HasOne(a => a.Employee)          // ApplicationUser has one Employee
         .WithOne(e => e.ApplicationUser) // Employee has one ApplicationUser
         .HasForeignKey<Employee>(e => e.ApplicationUserId) // The foreign key is Employee.ApplicationUserId
-        .OnDelete(DeleteBehavior.Cascade); 
-
+        .OnDelete(DeleteBehavior.Cascade);
     }
 
     public DbSet<AttendanceRecord> AttendanceRecords { get; set; }

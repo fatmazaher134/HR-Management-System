@@ -127,13 +127,14 @@ namespace HRMS.Services.Impelmentation
                 if (existing == null || !existing.IsActive)
                     return false;
 
-                await _empRepo.UpdateAsync(employee);
+                await _empRepo.UpdateEmployeeAsync(employee);
                 return true;
             }
             catch
             {
                 return false;
             }
+
             //var existing = await _unitOfWork.Employee.GetByIdAsync(employee.EmployeeID);
             //if (existing == null || !existing.IsActive)
             //    return false;

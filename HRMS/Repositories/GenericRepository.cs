@@ -97,6 +97,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public Task<T> UpdateAsync(T entity)
     {
+
         _dbSet.Attach(entity);
         _context.Entry(entity).State = EntityState.Modified;
         return Task.FromResult(entity);
@@ -147,7 +148,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public async Task<bool> IsExistAsync(Expression<Func<T, bool>> criteria)
     {
-        return await _dbSet.AnyAsync(criteria);
+        return await _dbSet.AsNoTracking().AnyAsync(criteria);
     }
 
     public async Task<T> LastAsync(Expression<Func<T, object>> orderBy, Expression<Func<T, bool>>? criteria = null)
