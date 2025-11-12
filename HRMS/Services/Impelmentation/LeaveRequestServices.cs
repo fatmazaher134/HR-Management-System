@@ -111,19 +111,5 @@ namespace HRMS.Services.Impelmentation
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
-        
-        public async Task<bool> DeleteAsync(int id, string userId)
-        {
-            var request = await _unitOfWork.LeaveRequest
-                .FindAsync(lr => lr.LeaveRequestID == id && lr.Employee.ApplicationUserId == userId);
-
-            if (request == null)
-                return false;
-
-            await _unitOfWork.LeaveRequest.DeleteAsync(request);
-            await _unitOfWork.SaveChangesAsync();
-            return true;
-        }
-
     }
 }

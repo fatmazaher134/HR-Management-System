@@ -1,4 +1,3 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace HRMS.ViewModels.Employee
@@ -19,6 +18,6 @@ namespace HRMS.ViewModels.Employee
         public string? Comments { get; set; }
 
         // dropdown to select leave type
-        public IEnumerable<SelectListItem>? LeaveTypes { get; set; }
+        public IEnumerable<LeaveType>? LeaveTypes { get; set; }
     }
 }
