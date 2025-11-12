@@ -92,8 +92,8 @@ namespace HRMS.Services.Impelmentation
         }
         public List<string> GetAllRoles()
         {
-            List<IdentityRole> Roles = _roleManager.Roles.ToList();
-            List<string> stringRoles = new();
+            List<IdentityRole> Roles =  _roleManager.Roles.ToList();
+            List<string> stringRoles= new();
             foreach (var role in Roles)
             {
                 stringRoles.Add(role.Name);

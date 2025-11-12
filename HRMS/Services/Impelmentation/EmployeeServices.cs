@@ -91,9 +91,9 @@ namespace HRMS.Services.Impelmentation
                     }
                     return result;
                 }
-                catch
+                catch    
                 {
-                    _unitOfWork.Rollback();
+                     _unitOfWork.Rollback();
                     return IdentityResult.Failed(new IdentityError { Description = "An error occurred while registering the employee." });
                 }
             }
@@ -128,13 +128,14 @@ namespace HRMS.Services.Impelmentation
                 if (existing == null || !existing.IsActive)
                     return false;
 
-                await _empRepo.UpdateAsync(employee);
+                await _empRepo.UpdateEmployeeAsync(employee);
                 return true;
             }
             catch
             {
                 return false;
             }
+
             //var existing = await _unitOfWork.Employee.GetByIdAsync(employee.EmployeeID);
             //if (existing == null || !existing.IsActive)
             //    return false;
@@ -193,7 +194,7 @@ namespace HRMS.Services.Impelmentation
             // return emp based on UserId
             var includes = new string[] { "Department", "JobTitle", "ApplicationUser" };
             return await _empRepo.FindAsync(
-                criteria: e => e.ApplicationUserId == userId && e.IsActive,
+                criteria: e => e.UserId == userId && e.IsActive,
                 includes: includes
             );
         }
@@ -264,4 +265,6 @@ namespace HRMS.Services.Impelmentation
             return await _empRepo.IsExistAsync(e => e.Email == email);
         }
     }
-}
+ }
+
+
