@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251106203658_InitialMigrate")]
-    partial class InitialMigrate
+    [Migration("20251112143335_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -172,6 +172,10 @@ namespace HRMS.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<decimal>("BasicSalary")
                         .HasColumnType("decimal(10,2)");
 
@@ -209,16 +213,14 @@ namespace HRMS.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("EmployeeID");
+
+                    b.HasIndex("ApplicationUserId")
+                        .IsUnique();
 
                     b.HasIndex("DepartmentID");
 
                     b.HasIndex("JobTitleID");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Employees");
                 });
@@ -578,6 +580,12 @@ namespace HRMS.Migrations
 
             modelBuilder.Entity("HRMS.Models.Employee", b =>
                 {
+                    b.HasOne("HRMS.Models.ApplicationUser", "ApplicationUser")
+                        .WithOne("Employee")
+                        .HasForeignKey("HRMS.Models.Employee", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HRMS.Models.Department", "Department")
                         .WithMany("Employees")
                         .HasForeignKey("DepartmentID")
@@ -586,10 +594,6 @@ namespace HRMS.Migrations
                     b.HasOne("HRMS.Models.JobTitle", "JobTitle")
                         .WithMany("Employees")
                         .HasForeignKey("JobTitleID");
-
-                    b.HasOne("HRMS.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
 
                     b.Navigation("ApplicationUser");
 
@@ -707,6 +711,12 @@ namespace HRMS.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HRMS.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Employee")
                         .IsRequired();
                 });
 

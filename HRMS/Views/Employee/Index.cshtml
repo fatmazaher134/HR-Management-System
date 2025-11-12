@@ -1,57 +1,152 @@
-﻿@using System.Linq
-@model IEnumerable<HRMS.Models.Employee>
+﻿@model IEnumerable<HRMS.ViewModels.Employee.EmployeeListViewModel>
 
 @{
-    ViewData["Title"] = "Employees List";
+    ViewData["Title"] = "Employee list";
 }
 
-<h2>Employees</h2>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Add New Employee</a>
-</p>
-
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Hire Date</th>
-            <th>Salary</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-    @if (Model != null && Model.Any())
-    {
-        foreach (var emp in Model)
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="text-primary">
+                <i class="fas fa-users"></i> Employee list
+            </h2>
+        </div>
+            
+        @if (User.IsInRole("Admin"))
         {
-            <tr>
-                <td>@emp.EmployeeID</td>
-                <td>@emp.FirstName @emp.LastName</td>
-                <td>@emp.Email</td>
-                <td>@emp.PhoneNumber</td>
-                <td>@emp.HireDate.ToShortDateString()</td>
-                <td>@emp.BasicSalary.ToString("C")</td>
-                <td>
-                    @(emp.IsActive ? "Active" : "Inactive")
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@emp.EmployeeID" class="btn btn-info btn-sm">View</a>
-                    <a asp-action="Edit" asp-route-id="@emp.EmployeeID" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@emp.EmployeeID" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
+            <div class="col-md-6 text-end">
+                <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add New Employee
+            </a>
+        </div>
         }
-    }
-    else
+    </div>
+
+    @if (TempData["Success"] != null)
     {
-        <tr>
-            <td colspan="8" class="text-center">No employees found.</td>
-        </tr>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     }
-    </tbody>
-</table>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle" id="employeesTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Full name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Department</th>
+                            <th>Job Title</th>
+                            <th>Basic Salary</th>
+                            <th>Hiring Date</th>
+                            <th>Status</th>
+                            <th class="text-center">Procedures</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var employee in Model)
+                            {
+                                <tr>
+                                    <td>@employee.EmployeeID</td>
+                                    <td>
+                                        <strong>@employee.FullName</strong>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-envelope text-muted"></i>
+                                        @employee.Email
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(employee.PhoneNumber))
+                                        {
+                                            <i class="fas fa-phone text-muted"></i>
+                                            @employee.PhoneNumber
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@employee.DepartmentName</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@employee.JobTitleName</span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">@employee.BasicSalary.ToString("N2") L.E</strong>
+                                    </td>
+                                    <td>
+                                        @employee.HireDate.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td>
+                                        @if (employee.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">InActive</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@employee.EmployeeID" 
+                                               class="btn btn-sm btn-info" title="Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@employee.EmployeeID" 
+                                               class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@employee.EmployeeID" 
+                                               class="btn btn-sm btn-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                    <p>No Employees Data</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#employeesTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/ar.json"
+                },
+                "order": [[0, "desc"]],
+                "pageLength": 10
+            });
+        })
+    </script>}
