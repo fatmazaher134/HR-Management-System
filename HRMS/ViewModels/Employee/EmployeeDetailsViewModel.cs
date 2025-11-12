@@ -20,5 +20,7 @@
         // Calculated
         public int Age => DateTime.Now.Year - DateOfBirth.Year;
         public int YearsOfService => DateTime.Now.Year - HireDate.Year;
+
+        public string ApplicationUserId { get; set; } = string.Empty;
     }
 }

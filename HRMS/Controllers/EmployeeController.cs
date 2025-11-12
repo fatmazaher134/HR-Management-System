@@ -179,23 +179,8 @@ namespace HRMS.Controllers
                 return View(model);
             }
 
-            var employee = new Employee
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-                PhoneNumber = model.PhoneNumber,
-                Address = model.Address,
-                DateOfBirth = model.DateOfBirth,
-                HireDate = model.HireDate,
-                BasicSalary = model.BasicSalary,
-                DepartmentID = model.DepartmentID,
-                JobTitleID = model.JobTitleID,
-                UserId = model.UserId,
-                IsActive = true
-            };
+            IdentityResult result = await _employeeServices.RegisterEmployeeAsync(model);
 
-            await _employeeServices.AddAsync(employee);
             TempData["Success"] = "Employee Added Successfully";
             return RedirectToAction(nameof(Index));
         }
@@ -288,7 +273,7 @@ namespace HRMS.Controllers
                 model.UserList = users;
                 return View(model);
             }
-
+            
             var employee = new Employee
             {
                 EmployeeID = model.EmployeeID,
@@ -374,7 +359,8 @@ namespace HRMS.Controllers
                 PhoneNumber = employee.PhoneNumber,
                 DepartmentName = employee.Department?.DepartmentName ?? "N/A",
                 JobTitleName = employee.JobTitle?.TitleName ?? "N/A",
-                HireDate = employee.HireDate
+                HireDate = employee.HireDate,
+                ApplicationUserId = employee.ApplicationUserId
             };
 
             return View(model);
@@ -383,12 +369,24 @@ namespace HRMS.Controllers
         [Authorize(Roles = "Admin,HR")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string ApplicationUserId)
         {
-            var deleted = await _employeeServices.DeleteAsync(id);
-
-            if (!deleted)
+            var user = await _userManager.FindByIdAsync(ApplicationUserId);
+            if (user == null)
             {
+                return NotFound();
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+
+
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
                 TempData["Error"] = "An error occurred while deleting";
                 return RedirectToAction(nameof(Index));
             }

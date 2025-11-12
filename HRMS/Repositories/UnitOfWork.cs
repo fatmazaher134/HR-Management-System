@@ -2,6 +2,7 @@
 using HRMS.Interfaces;
 using HRMS.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace HRMS.Repositories;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
+    private IDbContextTransaction _transaction;
+
 
     public IApplicationUserRepository ApplicationUser { get; }
     public IAttendanceRecordRepository AttendanceRecord { get; }
@@ -71,6 +74,22 @@ public class UnitOfWork : IUnitOfWork
         }
 
         return await _context.SaveChangesAsync();
+    }
+    public IDbContextTransaction BeginTransaction()
+    {
+       return _transaction = _context.Database.BeginTransaction();
+    }
+
+    public void Commit()
+    {
+        _transaction?.Commit();
+        _transaction?.Dispose();
+    }
+
+    public void Rollback()
+    {
+        _transaction?.Rollback();
+        _transaction?.Dispose();
     }
 
     public void Dispose()

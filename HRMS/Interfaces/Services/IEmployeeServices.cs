@@ -1,5 +1,6 @@
 ﻿using HRMS.Models;
 using HRMS.ViewModels.Employee;
+using Microsoft.AspNetCore.Identity;
 
 namespace HRMS.Interfaces.Services
 {
@@ -18,6 +19,7 @@ namespace HRMS.Interfaces.Services
         Task<IEnumerable<Employee>> GetByDepartmentIdAsync(int departmentId);
         Task<decimal> GetTotalSalaryAsync(int departmentId);
         Task<bool> IsEmailExistsAsync(string email, int? excludeEmployeeId = null);
+        public Task<IdentityResult> RegisterEmployeeAsync(EmployeeFormViewModel employee);
     }
 
 }

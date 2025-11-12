@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,4 +23,9 @@ public interface IUnitOfWork: IDisposable
     ISalaryComponentRepository SalaryComponent { get; }
     
     Task<int> SaveChangesAsync();
+    public IDbContextTransaction BeginTransaction();
+    public void Commit();
+
+    public void Rollback();
+
 }

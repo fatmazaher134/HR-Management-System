@@ -78,14 +78,29 @@ namespace HRMS.Services.Impelmentation
                 FullName = model.FullName,
                 Address = model.Address
             };
+
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded)
+            if (result.Succeeded && !string.IsNullOrEmpty(model.SelectedRole))
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
+                var roleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                if (!roleResult.Succeeded)
+                {
+                    return roleResult;
+                }
             }
-
             return result;
+        }
+        public List<string> GetAllRoles()
+        {
+            List<IdentityRole> Roles =  _roleManager.Roles.ToList();
+            List<string> stringRoles= new();
+            foreach (var role in Roles)
+            {
+                stringRoles.Add(role.Name);
+            }
+            return stringRoles;
         }
     }
 }

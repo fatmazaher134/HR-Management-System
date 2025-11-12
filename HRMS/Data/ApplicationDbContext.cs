@@ -47,6 +47,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         //        .HasForeignKey(l => l.ApprovedByHRID)
         //        .OnDelete(DeleteBehavior.Restrict);
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<ApplicationUser>()
+        .HasOne(a => a.Employee)          // ApplicationUser has one Employee
+        .WithOne(e => e.ApplicationUser) // Employee has one ApplicationUser
+        .HasForeignKey<Employee>(e => e.ApplicationUserId) // The foreign key is Employee.ApplicationUserId
+        .OnDelete(DeleteBehavior.Cascade); 
 
     }
 

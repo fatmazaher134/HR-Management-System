@@ -1,0 +1,42 @@
+﻿@model IEnumerable<HRMS.ViewModels.Employee.LeaveRequestViewModel>
+
+@{
+    ViewData["Title"] = "My Leave Requests";
+}
+
+<h2 class="mb-4">My Leave Requests</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">New Leave Request</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>Leave Type</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.LeaveTypeName</td>
+                <td>@item.StartDate.ToShortDateString()</td>
+                <td>@item.EndDate.ToShortDateString()</td>
+                <td>@item.Status</td>
+                <td>
+                    @if (item.Status == "Pending")
+                    {
+                        <a asp-action="Cancel" asp-route-id="@item.LeaveRequestID" class="btn btn-warning btn-sm">Cancel</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">N/A</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

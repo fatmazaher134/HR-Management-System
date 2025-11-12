@@ -1,0 +1,42 @@
+﻿@* @model HRMS.ViewModels.Employee.CreateLeaveRequestViewModel
+
+@{
+    ViewData["Title"] = "New Leave Request";
+}
+
+<h2 class="mb-4">Request New Leave</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="LeaveTypeId" class="form-label"></label>
+        <select asp-for="LeaveTypeId" class="form-select" asp-items="Model.LeaveTypes">
+            <option value="">-- Select Leave Type --</option>
+        </select>
+        <span asp-validation-for="LeaveTypeId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" class="form-control" type="date" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EndDate" class="form-label"></label>
+        <input asp-for="EndDate" class="form-control" type="date" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Reason" class="form-label"></label>
+        <textarea asp-for="Reason" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Request</button>
+    <a asp-action="MyRequests" class="btn btn-secondary ms-2">Back</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@

@@ -13,8 +13,7 @@ public interface IEmployeeRepository : IGenericRepository<Employee>
     Task SoftDeleteAsync(int employeeId);
 
     Task<IEnumerable<Employee>> GetEmployeesByDepartmentAsync(int departmentId);
-}
 
-    Task<IEnumerable<Employee>> GetActiveEmployeesAsync();
-    Task SoftDeleteAsync(int employeeId);
+    
+
 }

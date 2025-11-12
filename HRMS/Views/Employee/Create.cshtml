@@ -59,7 +59,18 @@
                         <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                     </div>
                 </div>
-
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                    <div class="col-md-6 mb-3">
+                    <label asp-for="ConfirmPassword" class="control-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+                </div>  
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label asp-for="DateOfBirth" class="form-label"></label>

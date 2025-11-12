@@ -2,12 +2,13 @@
 using HRMS.Interfaces.Services;
 using HRMS.Models;
 using HRMS.ViewModels.Employee;
+using Microsoft.AspNetCore.Identity;
 
 namespace HRMS.Services.Impelmentation
 {
     public class EmployeeServices : IEmployeeServices
     {
-        //private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         //public EmployeeServices(IUnitOfWork unitOfWork)
         //{
@@ -21,10 +22,14 @@ namespace HRMS.Services.Impelmentation
         //        .FindAllAsync(e => e.IsActive, new[] { "Department", "JobTitle" });
 
         private readonly IEmployeeRepository _empRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public EmployeeServices(IEmployeeRepository empRepo)
+        public EmployeeServices(IEmployeeRepository empRepo, IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
             _empRepo = empRepo;
+            _unitOfWork = unitOfWork;
+            _userManager = userManager;
+
         }
 
 
@@ -39,6 +44,58 @@ namespace HRMS.Services.Impelmentation
             //var includes = new string[] { "Department", "JobTitle" };            
             //return await _empRepo.FindAllAsync(criteria: null, includes: includes);
 
+        }
+
+        public async Task<IdentityResult> RegisterEmployeeAsync(EmployeeFormViewModel employee)
+        {
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                try
+                {
+                    // Create Application User
+                    var appUser = new ApplicationUser
+                    {
+                        UserName = employee.Email,
+                        Email = employee.Email,
+                        FullName = $"{employee.FirstName} {employee.LastName}",
+                        Address = employee.Address,
+                        PhoneNumber = employee.PhoneNumber
+                    };
+                    var result = await _userManager.CreateAsync(appUser, employee.Password);
+                    if (result.Succeeded)
+                    {
+                        // 2. Hard-code the "Employee" role
+                        // (Ensure this role exists in your database!)
+                        await _userManager.AddToRoleAsync(appUser, "Employee");
+
+                        // Create Employee
+                        var emp = new Employee
+                        {
+                            FirstName = employee.FirstName,
+                            LastName = employee.LastName,
+                            Email = employee.Email,
+                            PhoneNumber = employee.PhoneNumber,
+                            Address = employee.Address,
+                            BasicSalary = employee.BasicSalary,
+                            DepartmentID = employee.DepartmentID,
+                            JobTitleID = employee.JobTitleID,
+                            DateOfBirth = employee.DateOfBirth,
+                            HireDate = DateTime.Now,
+                            IsActive = true,
+                            ApplicationUserId = appUser.Id
+                        };
+                        await _empRepo.AddAsync(emp);
+                        await _unitOfWork.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                    }
+                    return result;
+                }
+                catch    
+                {
+                     _unitOfWork.Rollback();
+                    return IdentityResult.Failed(new IdentityError { Description = "An error occurred while registering the employee." });
+                }
+            }
         }
 
         public async Task<Employee?> GetByIdAsync(int id)

@@ -63,4 +63,9 @@ public class Employee
     public ICollection<LeaveRequest>? LeaveRequests { get; set; } = new List<LeaveRequest>();
     public ICollection<AttendanceRecord>? AttendanceRecords { get; set; } = new List<AttendanceRecord>();
     public ICollection<Payslip>? Payslips { get; set; } = new List<Payslip>();
+    
+    [Required]
+    public string ApplicationUserId { get; set; }
+
+    // 2. The Navigation property
 }
