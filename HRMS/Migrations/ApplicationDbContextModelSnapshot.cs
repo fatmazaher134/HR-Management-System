@@ -210,9 +210,6 @@ namespace HRMS.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("EmployeeID");
 
                     b.HasIndex("ApplicationUserId")
