@@ -1,7 +1,8 @@
-﻿using HRMS.Interfaces.Services;
+﻿using HRMS.Interfaces.Services; // <-- التأكد من وجودها
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+// قد تحتاج لإضافة using لنطاق الأسماء (namespace) الخاص بـ DepartmentViewModel و DepartmentFormViewModel إذا لم يكن موجوداً
 
 namespace HRMS.Controllers
 {
@@ -9,22 +10,22 @@ namespace HRMS.Controllers
     public class DepartmentController : Controller
     {
         private readonly IDepartmentServices _deptService;
-        private readonly IEmployeeRepository _empRepo; 
+        private readonly IEmployeeServices _empService;
 
-        public DepartmentController(IDepartmentServices deptService, IEmployeeRepository empRepo)
+        public DepartmentController(IDepartmentServices deptService, IEmployeeServices empService)
         {
             _deptService = deptService;
-            _empRepo = empRepo;
+            _empService = empService;
         }
 
         private async Task<IEnumerable<SelectListItem>> GetEmployeesSelectListAsync()
         {
-            var employees = await _empRepo.GetAllAsync();
+            var employees = await _empService.GetAllAsync();
 
             return employees.Select(e => new SelectListItem
             {
-                Value = e.EmployeeID.ToString(), 
-                Text = e.FirstName + " " + e.LastName           
+                Value = e.EmployeeID.ToString(),
+                Text = e.FirstName + " " + e.LastName
             });
         }
 
@@ -37,7 +38,7 @@ namespace HRMS.Controllers
             {
                 DepartmentID = d.DepartmentID,
                 DepartmentName = d.DepartmentName,
-                ManagerName = d.Manager != null ? d.Manager.FirstName +" " + d.Manager.LastName : "N/A"
+                ManagerName = d.Manager != null ? d.Manager.FirstName + " " + d.Manager.LastName : "N/A"
             });
 
             return View(model);
@@ -56,13 +57,14 @@ namespace HRMS.Controllers
             {
                 DepartmentID = department.DepartmentID,
                 DepartmentName = department.DepartmentName,
-                ManagerName = department.Manager != null ? 
-                department.Manager.FirstName +" "+ department.Manager.LastName : "N/A" 
+                ManagerName = department.Manager != null ?
+                department.Manager.FirstName + " " + department.Manager.LastName : "N/A"
             };
 
             return View(model);
         }
 
+        // GET: /Departments/Create
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
@@ -110,7 +112,7 @@ namespace HRMS.Controllers
                 DepartmentID = department.DepartmentID,
                 DepartmentName = department.DepartmentName,
                 ManagerID = department.ManagerID,
-                ManagerList = await GetEmployeesSelectListAsync() // Populate dropdown
+                ManagerList = await GetEmployeesSelectListAsync() // dropdown
             };
 
             return View(model);
@@ -158,8 +160,8 @@ namespace HRMS.Controllers
             {
                 DepartmentID = department.DepartmentID,
                 DepartmentName = department.DepartmentName,
-                ManagerName = department.Manager != null ? 
-                department.Manager.FirstName +" "+ department.Manager.LastName : "N/A" 
+                ManagerName = department.Manager != null ?
+                department.Manager.FirstName + " " + department.Manager.LastName : "N/A"
             };
 
             return View(model);

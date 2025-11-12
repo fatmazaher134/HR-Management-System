@@ -1,5 +1,4 @@
-﻿using HRMS.Models;
-using HRMS.ViewModels.Employee;
+﻿using HRMS.ViewModels.Employee;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HRMS.Controllers
 {
+    [Authorize] 
     public class LeaveRequestController : Controller
     {
         private readonly ILeaveRequestServices _service;
@@ -21,7 +21,7 @@ namespace HRMS.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Roles = "Employee,HR")]
+        [Authorize(Roles = "Employee,HR,Admin")]
         public async Task<IActionResult> Index()
         {
             if (User.IsInRole("HR"))
@@ -81,7 +81,7 @@ namespace HRMS.Controllers
         {
             // hear can the hr approve the request
             var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.ApplicationUserId == user.Id);
             await _service.ApproveAsync(id, emp.EmployeeID);
             return RedirectToAction(nameof(Index));
         }
@@ -91,7 +91,7 @@ namespace HRMS.Controllers
         public async Task<IActionResult> Reject(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.ApplicationUserId == user.Id);
             await _service.RejectAsync(id, emp.EmployeeID, "Not eligible");
             return RedirectToAction(nameof(Index));
         }
@@ -100,7 +100,7 @@ namespace HRMS.Controllers
         public async Task<IActionResult> Cancel(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.ApplicationUserId == user.Id);
             await _service.CancelAsync(id, emp.EmployeeID);
             return RedirectToAction(nameof(MyRequests));
         }

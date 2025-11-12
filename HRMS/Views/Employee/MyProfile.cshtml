@@ -1,39 +1,38 @@
-﻿@model HRMS.ViewModels.Employee.EmployeeDetailsViewModel
+﻿@model HRMS.ViewModels.Employee.MyProfileViewModel
 
 @{
-    ViewData["Title"] = "Employee Details";
+    ViewData["Title"] = "My Profile";
 }
 
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-6">
             <h2 class="text-primary">
-                <i class="fas fa-user-circle"></i> Employee Details
+                <i class="fas fa-user-circle"></i> My Profile
             </h2>
         </div>
         <div class="col-md-6 text-end">
-            <a asp-action="Index" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back To List
+            <a asp-action="Edit" asp-route-id="@Model.EmployeeID" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit My Info
             </a>
-            @if (User.IsInRole("Admin") || User.IsInRole("HR"))
-            {
-                <a asp-action="Edit" asp-route-id="@Model.EmployeeID" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
-                </a>
-                <a asp-action="Delete" asp-route-id="@Model.EmployeeID" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Delete
-                </a>
-            }
         </div>
     </div>
 
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <div class="row">
-        <!-- الPersonal Info -->
+        <!-- Personal Information -->
         <div class="col-md-6 mb-4">
             <div class="card shadow h-100">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-id-card"></i> Personal Info
+                        <i class="fas fa-id-card"></i> Personal Information
                     </h5>
                 </div>
                 <div class="card-body">
@@ -61,13 +60,13 @@
                                 <th>
                                     <i class="fas fa-phone text-muted"></i> Phone Number:
                                 </th>
-                                <td>@(Model.PhoneNumber ?? "UnKnown ")</td>
+                                <td>@(Model.PhoneNumber ?? "Not specified")</td>
                             </tr>
                             <tr>
                                 <th>
                                     <i class="fas fa-map-marker-alt text-muted"></i> Address:
                                 </th>
-                                <td>@(Model.Address ?? "UnKnown")</td>
+                                <td>@(Model.Address ?? "Not specified")</td>
                             </tr>
                             <tr>
                                 <th>
@@ -75,12 +74,12 @@
                                 </th>
                                 <td>
                                     @Model.DateOfBirth.ToString("dd/MM/yyyy")
-                                    <span class="badge bg-info">@Model.Age Year</span>
+                                    <span class="badge bg-info">@Model.Age Years</span>
                                 </td>
                             </tr>
                             <tr>
                                 <th>
-                                    <i class="fas fa-user-tag text-muted"></i> User Name:
+                                    <i class="fas fa-user-tag text-muted"></i> Username:
                                 </th>
                                 <td>@Model.UserName</td>
                             </tr>
@@ -90,12 +89,12 @@
             </div>
         </div>
 
-        <!-- Personal info -->
+        <!-- Job Information -->
         <div class="col-md-6 mb-4">
             <div class="card shadow h-100">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-briefcase"></i> Personal Information
+                        <i class="fas fa-briefcase"></i> Job Information
                     </h5>
                 </div>
                 <div class="card-body">
@@ -119,11 +118,11 @@
                             </tr>
                             <tr>
                                 <th>
-                                    <i class="fas fa-calendar-plus text-muted"></i> Hiring Date:
+                                    <i class="fas fa-calendar-plus text-muted"></i> Hire Date:
                                 </th>
                                 <td>
                                     @Model.HireDate.ToString("dd/MM/yyyy")
-                                    <span class="badge bg-primary">@Model.YearsOfService Hiring Year</span>
+                                    <span class="badge bg-primary">@Model.YearsOfService Years of Service</span>
                                 </td>
                             </tr>
                             <tr>
@@ -134,25 +133,6 @@
                                     <strong class="text-success fs-5">@Model.BasicSalary.ToString("N2") L.E</strong>
                                 </td>
                             </tr>
-                            <tr>
-                                <th>
-                                    <i class="fas fa-toggle-on text-muted"></i> Status:
-                                </th>
-                                <td>
-                                    @if (Model.IsActive)
-                                    {
-                                        <span class="badge bg-success fs-6">
-                                            <i class="fas fa-check-circle"></i> Active
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger fs-6">
-                                            <i class="fas fa-times-circle"></i> InActive
-                                        </span>
-                                    }
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -160,47 +140,82 @@
         </div>
     </div>
 
-    <!-- Statistics (optional - can be added later) -->
-    @if (User.IsInRole("Admin") || User.IsInRole("HR"))
-    {
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card shadow">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-chart-line"></i> Quick Links
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-md-3">
-                                <a href="#" class="btn btn-outline-primary w-100">
-                                    <i class="fas fa-calendar-check fa-2x mb-2"></i>
-                                    <p class="mb-0">attendance record</p>
-                                </a>
+    <!-- Leave Statistics -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-umbrella-beach"></i> Leave Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded">
+                                <i class="fas fa-calendar-check fa-3x text-primary mb-2"></i>
+                                <h3 class="text-primary">@Model.TotalLeaveRequests</h3>
+                                <p class="text-muted mb-0">Total Requests</p>
                             </div>
-                            <div class="col-md-3">
-                                <a href="#" class="btn btn-outline-success w-100">
-                                    <i class="fas fa-file-invoice-dollar fa-2x mb-2"></i>
-                                    <p class="mb-0">Payroll</p>
-                                </a>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded">
+                                <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                                <h3 class="text-success">@Model.ApprovedLeaves</h3>
+                                <p class="text-muted mb-0">Approved</p>
                             </div>
-                            <div class="col-md-3">
-                                <a href="#" class="btn btn-outline-warning w-100">
-                                    <i class="fas fa-umbrella-beach fa-2x mb-2"></i>
-                                    <p class="mb-0">Leaves Requests</p>
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="#" class="btn btn-outline-info w-100">
-                                    <i class="fas fa-folder-open fa-2x mb-2"></i>
-                                    <p class="mb-0">Documents</p>
-                                </a>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded">
+                                <i class="fas fa-clock fa-3x text-warning mb-2"></i>
+                                <h3 class="text-warning">@Model.PendingLeaves</h3>
+                                <p class="text-muted mb-0">Pending</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    }
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-primary w-100 p-3">
+                                <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                                <p class="mb-0">My Attendance</p>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-success w-100 p-3">
+                                <i class="fas fa-file-invoice-dollar fa-2x mb-2"></i>
+                                <p class="mb-0">My Payslips</p>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-warning w-100 p-3">
+                                <i class="fas fa-umbrella-beach fa-2x mb-2"></i>
+                                <p class="mb-0">My Leave Requests</p>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-info w-100 p-3">
+                                <i class="fas fa-folder-open fa-2x mb-2"></i>
+                                <p class="mb-0">My Documents</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
