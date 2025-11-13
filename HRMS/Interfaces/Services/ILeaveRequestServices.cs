@@ -11,6 +11,9 @@ namespace HRMS.Interfaces.Services
         Task<bool> ApproveAsync(int id, int hrEmployeeId);
         Task<bool> RejectAsync(int id, int hrEmployeeId, string? comments);
         Task<bool> CancelAsync(int id, int hrEmployeeId);
+        Task<bool> DeleteAsync(int id, string userId);
+
+
 
     }
 

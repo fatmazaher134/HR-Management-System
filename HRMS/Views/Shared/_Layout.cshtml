@@ -31,12 +31,12 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Manage Roles</a>
                                 </li>
                             }
-                            @* @if (User.IsInRole("HR") || User.IsInRole("Employee")) *@
-                            @* { *@
+                            @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("Employee"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="LeaveRequest" asp-action="Index">Leave Request</a>
                                 </li>
-                            @* } *@
+                            }
                             @if (User.IsInRole("HR") || User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
