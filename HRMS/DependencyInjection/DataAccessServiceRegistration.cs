@@ -51,6 +51,7 @@ public static class DataAccessServiceRegistration
         services.AddScoped<IPayslipDetailRepository, PayslipDetailRepository>();
         services.AddScoped<IPayslipRepository, PayslipRepository>();
         services.AddScoped<ISalaryComponentRepository, SalaryComponentRepository>();
+        services.AddScoped<IPayrollService, PayrollService>();
 
         // -----------------------------
         // 🔹 Services
