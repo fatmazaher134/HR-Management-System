@@ -260,13 +260,13 @@ namespace HRMS.Migrations
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Employees_Departments_DepartmentID",
                         column: x => x.DepartmentID,
                         principalTable: "Departments",
                         principalColumn: "DepartmentID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Employees_JobTitles_JobTitleID",
                         column: x => x.JobTitleID,
@@ -489,7 +489,7 @@ namespace HRMS.Migrations
                 column: "EmployeeID",
                 principalTable: "Employees",
                 principalColumn: "EmployeeID",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.SetNull);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Departments_Employees_ManagerID",
@@ -497,7 +497,7 @@ namespace HRMS.Migrations
                 column: "ManagerID",
                 principalTable: "Employees",
                 principalColumn: "EmployeeID",
-                onDelete: ReferentialAction.Restrict);
+                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />

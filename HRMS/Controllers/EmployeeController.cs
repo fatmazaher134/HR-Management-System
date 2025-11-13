@@ -255,6 +255,7 @@ namespace HRMS.Controllers
 
             //    return View(model);
         //}
+
         [Authorize(Roles = "Admin,HR,Employee")]  //  السماح للجميع
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -321,8 +322,8 @@ namespace HRMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EmployeeFormViewModel model)
         {
-            if (id != model.EmployeeID)
-                return BadRequest();
+            //if (id != model.EmployeeID)
+            //    return BadRequest();
 
             if (!ModelState.IsValid)
             {
@@ -374,7 +375,9 @@ namespace HRMS.Controllers
             }
 
             TempData["Success"] = "Employee data has been updated successfully";
-            return RedirectToAction(nameof(Index));
+           // return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", new { id = model.EmployeeID });
+            
         }
 
         [Authorize(Roles = "Employee")]  
@@ -382,8 +385,8 @@ namespace HRMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBasicInfo(int id, EmployeeEditBasicInfoViewModel model)
         {
-            if (id != model.EmployeeID)
-                return BadRequest();
+            //if (id != model.EmployeeID)
+            //    return BadRequest();
 
             var employee = await _employeeServices.GetByIdAsync(id);
             if (employee == null)

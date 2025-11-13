@@ -22,7 +22,7 @@
         <div class="card-body">
             <form asp-action="Edit" method="post">
                 <input type="hidden" asp-for="EmployeeID" />
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
 
                 <!-- personal info -->
                 <div class="row mb-3">
@@ -83,6 +83,7 @@
                         </h5>
                     </div>
                 </div>
+                <!-- Department -->
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -92,6 +93,7 @@
                         </select>
                         <span asp-validation-for="DepartmentID" class="text-danger small"></span>
                     </div>
+                    <!-- JobTitle -->
 
                     <div class="col-md-6 mb-3">
                         <label asp-for="JobTitleID" class="form-label"></label>
@@ -101,6 +103,7 @@
                         <span asp-validation-for="JobTitleID" class="text-danger small"></span>
                     </div>
                 </div>
+                <!-- HireDate -->
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -113,7 +116,7 @@
                         <label asp-for="BasicSalary" class="form-label"></label>
                         <div class="input-group">
                             <input asp-for="BasicSalary" class="form-control" type="number" step="0.01" />
-                            <span class="input-group-text">ج.م</span>
+                            <span class="input-group-text">L.E</span>
                         </div>
                         <span asp-validation-for="BasicSalary" class="text-danger small"></span>
                     </div>
