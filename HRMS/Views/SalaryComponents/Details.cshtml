@@ -1,0 +1,15 @@
+﻿@model HRMS.ViewModels.SalaryComponent.SalaryComponentViewModel
+
+@{
+    ViewData["Title"] = "Salary Component Details";
+}
+
+<h2 class="mb-4">Salary Component Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Name:</strong> @Model.ComponentName</p>
+        <p><strong>Type:</strong> @Model.ComponentType</p>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
