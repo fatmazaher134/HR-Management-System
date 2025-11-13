@@ -101,14 +101,34 @@
                                     </ul>
                                 </li>
                             }
-                            else
+                            @* @if (User.IsInRole("HR") || User.IsInRole("Employee")) *@
+                            @* { *@
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="LeaveRequest" asp-action="Index">Leave Request</a>
+                                </li>
+                            @* } *@
+                            @if (User.IsInRole("HR") || User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Employee" asp-action="Index">
-                                        <i class="fas fa-users me-1"></i> Directory
-                                    </a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SalaryComponents" asp-action="Index">Salary Componentst</a>
                                 </li>
                             }
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Index">Employees</a>
+                            </li>
+                            <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="JobTitle" asp-action="Index">Job Titles</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="MyProfile">My profile</a>
+                            </li>
                         </ul>
 
                         <partial name="_LoginPartial" />
