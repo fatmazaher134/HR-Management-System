@@ -1,23 +1,46 @@
-using System.Diagnostics;
 using HRMS.ViewModels;
+using HRMS.ViewModels.Dashboard;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace HRMS.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(UserManager<ApplicationUser> userManager)
         {
-            _logger = logger;
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            // TODO: In the future, inject IEmployeeService and ILeaveService 
+            // to fetch real data from the database.
+
+            var model = new DashboardViewModel
+            {
+                // Mock Data for now
+                LeaveBalance = 21,
+                ApprovedLeavesThisYear = 4,
+                TotalEmployees = 150,
+                PendingLeaveRequests = 8,
+                NewHiresThisMonth = 3
+            };
+
+            return View(model);
         }
 
+        
         public IActionResult Privacy()
         {
             return View();

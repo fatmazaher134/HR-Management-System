@@ -12,6 +12,7 @@ namespace HRMS.Controllers
     public class AdminController(UserManager<ApplicationUser> _userManager, RoleManager<IdentityRole> _roleManager) : Controller
     {
 
+        [HttpGet("Index")]
         public async Task<IActionResult> IndexAsync()
         {
             var users = await _userManager.Users.ToListAsync();
