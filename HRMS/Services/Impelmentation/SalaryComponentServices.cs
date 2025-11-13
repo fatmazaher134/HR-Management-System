@@ -1,33 +1,77 @@
 ﻿using HRMS.Interfaces.Services;
 using HRMS.Models;
+using HRMS.ViewModels.SalaryComponent;
 
 namespace HRMS.Services.Impelmentation
 {
     public class SalaryComponentServices : ISalaryComponentServices
     {
-        public Task<SalaryComponent> AddAsync(SalaryComponent component)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public SalaryComponentServices(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<IEnumerable<SalaryComponentViewModel>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var list = await _unitOfWork.SalaryComponent.GetAllAsync();
+            return list.Select(c => new SalaryComponentViewModel
+            {
+                ComponentID = c.ComponentID,
+                ComponentName = c.ComponentName,
+                ComponentType = c.ComponentType
+            });
         }
 
-        public Task<IEnumerable<SalaryComponent>> GetAllAsync()
+        public async Task<SalaryComponentViewModel?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var c = await _unitOfWork.SalaryComponent.GetByIdAsync(id);
+            if (c == null) return null;
+
+            return new SalaryComponentViewModel
+            {
+                ComponentID = c.ComponentID,
+                ComponentName = c.ComponentName,
+                ComponentType = c.ComponentType
+            };
         }
 
-        public Task<SalaryComponent?> GetByIdAsync(int id)
+        public async Task<bool> CreateAsync(CreateSalaryComponentViewModel model)
         {
-            throw new NotImplementedException();
+            var entity = new SalaryComponent
+            {
+                ComponentName = model.ComponentName,
+                ComponentType = model.ComponentType
+            };
+
+            await _unitOfWork.SalaryComponent.AddAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
-        public Task<bool> UpdateAsync(SalaryComponent component)
+        public async Task<bool> UpdateAsync(int id, EditSalaryComponentViewModel model)
         {
-            throw new NotImplementedException();
+            var existingComponent = await _unitOfWork.SalaryComponent.GetByIdAsync(id);
+            if (existingComponent == null)
+                return false;
+
+            existingComponent.ComponentName = model.ComponentName;
+            existingComponent.ComponentType = model.ComponentType;
+
+            await _unitOfWork.SalaryComponent.UpdateAsync(existingComponent);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var existing = await _unitOfWork.SalaryComponent.GetByIdAsync(id);
+            if (existing == null) return false;
+
+            await _unitOfWork.SalaryComponent.DeleteAsync(existing);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
     }
 }
