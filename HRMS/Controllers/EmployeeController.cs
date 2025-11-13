@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Security.Claims;
+
 
 
 namespace HRMS.Controllers
@@ -316,8 +318,8 @@ namespace HRMS.Controllers
             return View(model);
         }
 
-        
-        [Authorize(Roles = "Admin,HR")]  
+
+        [Authorize(Roles = "Admin,HR")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EmployeeFormViewModel model)
@@ -325,26 +327,69 @@ namespace HRMS.Controllers
             //if (id != model.EmployeeID)
             //    return BadRequest();
 
+            var employee = await _employeeServices.GetByIdAsync(id);
+
+            // 1. Add 'NotFound' check
+            if (employee == null)
+                return NotFound();
+
+            ModelState.Remove(nameof(model.Password));
+            ModelState.Remove(nameof(model.ConfirmPassword));
+
             if (!ModelState.IsValid)
             {
-                var (departments, jobTitles, users) = await GetSelectListsAsync();
-                model.DepartmentList = departments;
-                model.JobTitleList = jobTitles;
-                model.UserList = users;
+                // 2. Use helper method for populating lists
+                await PopulateSelectListsAsync(model);
                 return View(model);
             }
 
-            //  Check: Email مش متكرر
+            // Check: Email مش متكرر
             if (await _employeeServices.IsEmailExistsAsync(model.Email, model.EmployeeID))
             {
                 ModelState.AddModelError("Email", "Email already exists");
-                var (departments, jobTitles, users) = await GetSelectListsAsync();
-                model.DepartmentList = departments;
-                model.JobTitleList = jobTitles;
-                model.UserList = users;
+                await PopulateSelectListsAsync(model);
                 return View(model);
             }
+            // --- End AppUser Update Logic ---
+
+            // Map properties to the Employee entity
+            employee.FirstName = model.FirstName;
+            employee.LastName = model.LastName;
+            employee.Email = model.Email;
+            employee.PhoneNumber = model.PhoneNumber;
+            employee.Address = model.Address;
+            employee.DateOfBirth = model.DateOfBirth;
+            employee.HireDate = model.HireDate;
+            employee.BasicSalary = model.BasicSalary;
+            employee.DepartmentID = model.DepartmentID;
+            employee.JobTitleID = model.JobTitleID;
+
+            var employeeUpdateResult = await _employeeServices.UpdateAsync(employee);
+            // --- Begin AppUser Update Logic ---
+            var appUser = employee.ApplicationUser;
+            IdentityResult appUserUpdateResult = null; // Initialize to null
+
+            // 3. Move all AppUser logic inside the null check
+            if (appUser != null)
+            {
+                appUser.Email = model.Email;
+                appUser.UserName = model.Email;
+                appUser.FullName = $"{model.FirstName} {model.LastName}";
+                appUser.Address = model.Address;
+                appUser.PhoneNumber = model.PhoneNumber;
+
+                appUserUpdateResult = await _userManager.UpdateAsync(appUser);
+
+                if (!appUserUpdateResult.Succeeded)
+                {
+                    // 4. Add specific Identity errors to ModelState
+                    AddIdentityErrorsToModelState(appUserUpdateResult);
+                    await PopulateSelectListsAsync(model);
+                    return View(model);
+                }
+            }
             
+<<<<<<< HEAD
             var employee = new Employee
             {
                 EmployeeID = model.EmployeeID,
@@ -361,16 +406,15 @@ namespace HRMS.Controllers
                 ApplicationUserId = model.UserId,
                 IsActive = true
             };
+=======
+>>>>>>> origin/Test
 
-            var updated = await _employeeServices.UpdateAsync(employee);
-
-            if (!updated)
+            // Check only the employee update result.
+            // The AppUser result was already checked (or skipped if appUser was null).
+            if (!employeeUpdateResult)
             {
-                ModelState.AddModelError("", "An error occurred during the update");
-                var (departments, jobTitles, users) = await GetSelectListsAsync();
-                model.DepartmentList = departments;
-                model.JobTitleList = jobTitles;
-                model.UserList = users;
+                ModelState.AddModelError("", "An error occurred while updating the employee record.");
+                await PopulateSelectListsAsync(model);
                 return View(model);
             }
 
@@ -378,6 +422,24 @@ namespace HRMS.Controllers
            // return RedirectToAction(nameof(Index));
             return RedirectToAction("Details", new { id = model.EmployeeID });
             
+        }
+
+        // Helper method to populate dropdowns (DRY principle)
+        private async Task PopulateSelectListsAsync(EmployeeFormViewModel model)
+        {
+            var (departments, jobTitles, users) = await GetSelectListsAsync();
+            model.DepartmentList = departments;
+            model.JobTitleList = jobTitles;
+            model.UserList = users;
+        }
+
+        // Helper method to show Identity errors
+        private void AddIdentityErrorsToModelState(IdentityResult identityResult)
+        {
+            foreach (var error in identityResult.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
 
         [Authorize(Roles = "Employee")]  

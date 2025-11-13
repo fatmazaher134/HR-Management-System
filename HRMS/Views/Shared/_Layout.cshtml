@@ -4,33 +4,116 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HRMS</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HRMS.styles.css" asp-append-version="true" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        /* Theme Overrides */
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f6f9; /* Light Gray Dashboard Background */
+            color: #5a5c69;
+        }
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: #ffffff;
+            box-shadow: 0 .15rem 1.75rem 0 rgba(58, 59, 69, .15);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #4e73df !important; /* Brand Blue */
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            color: #6e707e !important;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+            .nav-link:hover {
+                color: #4e73df !important;
+            }
+
+            .nav-link.active {
+                color: #4e73df !important;
+            }
+
+        /* Footer */
+        .footer {
+            background-color: #fff;
+            border-top: 1px solid #e3e6f0;
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
         @if (User.Identity.IsAuthenticated)
         {
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HRMS</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+            <nav class="navbar navbar-expand-md navbar-light navbar-custom mb-4 sticky-top">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-user-shield me-2"></i>HRMS
+                    </a>
+
+                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
 
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                                </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="LeaveRequest" asp-action="Index">
+                                    <i class="fas fa-calendar-check me-1"></i> Leaves
+                                </a>
+                            </li>
+
                             @if (User.IsInRole("Admin"))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Manage Roles</a>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-cogs me-1"></i> Administration
+                                    </a>
+                                    <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="adminDropdown">
+                                        <li><a class="dropdown-item small" asp-controller="Admin" asp-action="Index">Manage Roles</a></li>
+                                        <li><a class="dropdown-item small" asp-controller="Department" asp-action="Index">Departments</a></li>
+                                        <li><a class="dropdown-item small" asp-controller="JobTitle" asp-action="Index">Job Titles</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item small" asp-controller="Employee" asp-action="Index">All Employees</a></li>
+                                    </ul>
                                 </li>
                             }
+                            @* @if (User.IsInRole("HR") || User.IsInRole("Employee")) *@
+                            @* { *@
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="LeaveRequest" asp-action="Index">Leave Request</a>
+                                </li>
+                            @* } *@
+                            @if (User.IsInRole("HR") || User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SalaryComponents" asp-action="Index">Salary Componentst</a>
+                                </li>
+                            }
+
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             </li>
@@ -53,23 +136,26 @@
                                 </li>
                             }
                         </ul>
+
                         <partial name="_LoginPartial" />
                     </div>
                 </div>
             </nav>
         }
     </header>
-    <div class="container">
+
+    <div class="container mb-5">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - HRMS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer mt-auto py-3">
+        <div class="container text-center">
+            <span class="text-muted">&copy; @DateTime.Now.Year - HRMS System. All rights reserved.</span>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

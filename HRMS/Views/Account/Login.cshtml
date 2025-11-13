@@ -1,43 +1,75 @@
-﻿@model HRMS.ViewModels.LoginViewModel
+﻿@using HRMS.ViewModels.Account
+@model LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "HRMS Login";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Ensure layout is applied
 }
 
-<h1>Login</h1>
+<style>
+    /* Optional: Add a subtle background to the whole page for contrast */
+    body {
+        background-color: #f4f6f9;
+    }
+    .login-card {
+        border: none;
+        border-top: 4px solid #007bff; /* Brand color accent */
+    }
+</style>
 
-@* <h4>LoginViewModel</h4> *@
-<hr />
-<div class="row">   
-    <div class="col-md-4">
-        <form asp-action="Login">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UsernameOrEmail" class="control-label"></label>
-                <input asp-for="UsernameOrEmail" class="form-control" />
-                <span asp-validation-for="UsernameOrEmail" class="text-danger"></span>
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-6 col-lg-4">
+
+            <div class="card shadow-lg login-card">
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+                        <h2 class="font-weight-bold text-primary">HRMS</h2>
+                        <p class="text-muted">Sign in to your account</p>
+                    </div>
+
+                    <form asp-action="Login">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="UsernameOrEmail" class="control-label text-secondary small text-uppercase fw-bold">Username or Email</label>
+                            <input asp-for="UsernameOrEmail" class="form-control form-control-lg" placeholder="name@company.com" />
+                            <span asp-validation-for="UsernameOrEmail" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Password" class="control-label text-secondary small text-uppercase fw-bold">Password</label>
+                            <input asp-for="Password" class="form-control form-control-lg" placeholder="••••••••" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" asp-for="RememberMe" />
+                                <label class="form-check-label text-muted" asp-for="RememberMe">
+                                    @Html.DisplayNameFor(model => model.RememberMe)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light border-0">
+                    <small class="text-muted">Need help? Contact IT Support.</small>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="RememberMe" /> @Html.DisplayNameFor(model => model.RememberMe)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Login" class="btn btn-primary" />
-            </div>
-        </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    @* <a asp-action="Index">Back to List</a> *@
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

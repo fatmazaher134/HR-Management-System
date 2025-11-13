@@ -41,6 +41,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
         //modelBuilder.Entity<LeaveRequest>()
         //        .HasOne(l => l.ApprovedByHR)
         //        .WithMany(e => e.LeaveRequests)

@@ -10,5 +10,9 @@ public interface IEmployeeRepository : IGenericRepository<Employee>
     Task<IEnumerable<Employee>> GetEmployeesByDepartmentAsync(int departmentId);
 
 
+<<<<<<< HEAD
+=======
+    public Task<Employee> UpdateEmployeeAsync(Employee entity);
+>>>>>>> origin/Test
 
 }

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿using HRMS.ViewModels;
+=======
+﻿using HRMS.ViewModels.Account;
+>>>>>>> origin/Test
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -6,7 +10,25 @@ namespace HRMS.Services.Impelmentation
 {
     public class AccountServic(UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, RoleManager<IdentityRole> _roleManager) : IAccountService
     {
+        public async Task<IdentityResult> UpdateProfileAsync(ManageAccountViewModel model)
+        {
+           
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                model.StatusMessage = "Profile update Failed";
 
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+            model.StatusMessage = "Profile updated successfully";
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.UserName = model.UserName;
+            var result = await _userManager.UpdateAsync(user);
+            
+            return result;
+
+        }
         public async Task<SignInResult> LoginUserAsync(LoginViewModel model)
         {
             ApplicationUser user = await _userManager.FindByEmailAsync(model.UsernameOrEmail);
@@ -18,7 +40,7 @@ namespace HRMS.Services.Impelmentation
             {
                 return SignInResult.Failed;
             }
-            
+
             if (await _userManager.IsLockedOutAsync(user))
             {
                 return SignInResult.LockedOut;
@@ -28,19 +50,19 @@ namespace HRMS.Services.Impelmentation
                 user,
                 model.Password
             );
-            
+
             if (result)
             {
                 await _userManager.ResetAccessFailedCountAsync(user);
 
                 List<Claim> claims = new List<Claim>();
                 var roles = await _userManager.GetRolesAsync(user);
-                
+
                 claims.Add(new Claim(ClaimTypes.Name, user.UserName));
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
                 claims.Add(new Claim("Address", user.Address));
-                if(user.Email != null)
-                claims.Add(new Claim(ClaimTypes.Email, user.Email));
+                if (user.Email != null)
+                    claims.Add(new Claim(ClaimTypes.Email, user.Email));
                 foreach (var role in roles)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));

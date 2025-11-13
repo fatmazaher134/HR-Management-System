@@ -9,4 +9,5 @@ namespace HRMS.Interfaces;
 
 public interface ILeaveRequestRepository : IGenericRepository<LeaveRequest>
 {
+    
 }

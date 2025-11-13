@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace HRMS.ViewModels
+namespace HRMS.ViewModels.Account
 {
     public class RegisterViewModel
     {
