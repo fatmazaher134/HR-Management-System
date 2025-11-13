@@ -10,5 +10,7 @@ namespace HRMS.Interfaces.Services
         Task<SignInResult> LoginUserAsync(LoginViewModel model);
 
         Task LogoutUserAsync();
+        List<string> GetAllRoles();
+
     }
 }

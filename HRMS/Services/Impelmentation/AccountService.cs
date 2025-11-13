@@ -1,6 +1,4 @@
-﻿using HRMS.Interfaces.Services;
-using HRMS.Models;
-using HRMS.ViewModels;
+﻿using HRMS.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -20,7 +18,7 @@ namespace HRMS.Services.Impelmentation
             {
                 return SignInResult.Failed;
             }
-            
+
             if (await _userManager.IsLockedOutAsync(user))
             {
                 return SignInResult.LockedOut;
@@ -30,19 +28,19 @@ namespace HRMS.Services.Impelmentation
                 user,
                 model.Password
             );
-            
+
             if (result)
             {
                 await _userManager.ResetAccessFailedCountAsync(user);
 
                 List<Claim> claims = new List<Claim>();
                 var roles = await _userManager.GetRolesAsync(user);
-                
+
                 claims.Add(new Claim(ClaimTypes.Name, user.UserName));
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
                 claims.Add(new Claim("Address", user.Address));
-                if(user.Email != null)
-                claims.Add(new Claim(ClaimTypes.Email, user.Email));
+                if (user.Email != null)
+                    claims.Add(new Claim(ClaimTypes.Email, user.Email));
                 foreach (var role in roles)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));
@@ -78,11 +76,29 @@ namespace HRMS.Services.Impelmentation
                 FullName = model.FullName,
                 Address = model.Address
             };
+
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            
-
+            if (result.Succeeded && !string.IsNullOrEmpty(model.SelectedRole))
+            {
+                var roleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                if (!roleResult.Succeeded)
+                {
+                    return roleResult;
+                }
+            }
             return result;
+        }
+        public List<string> GetAllRoles()
+        {
+            List<IdentityRole> Roles =  _roleManager.Roles.ToList();
+            List<string> stringRoles= new();
+            foreach (var role in Roles)
+            {
+                stringRoles.Add(role.Name);
+            }
+            return stringRoles;
         }
     }
 }

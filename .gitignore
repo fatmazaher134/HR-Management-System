@@ -3,6 +3,8 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+## ignore the appsettings.json
+HRMS/appsettings.json
 # dotenv files
 .env
 
@@ -489,3 +491,6 @@ $RECYCLE.BIN/
 /.vs/
 /Properties/launchSettings.json
 /appsettings.Development.json
+/HRMS/Program.cs
+/HRMS/appsettings.json
+/HRMS/appsettings.json

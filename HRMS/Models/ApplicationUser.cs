@@ -26,6 +26,8 @@ public class ApplicationUser : IdentityUser
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public Gender Gender { get; set; }
+
+    public virtual Employee Employee { get; set; }
 }
 
 public enum Gender

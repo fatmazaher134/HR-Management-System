@@ -13,11 +13,6 @@ public class Employee
     [Key]
     public int EmployeeID { get; set; }
 
-    // FK to AspNetUsers (string type because Identity uses GUID strings)
-    [ForeignKey("ApplicationUser")]
-    public string? UserId { get; set; }
-
-
     [Required, MaxLength(100)]
     public required string FirstName { get; set; }
 
@@ -63,4 +58,9 @@ public class Employee
     public ICollection<LeaveRequest>? LeaveRequests { get; set; } = new List<LeaveRequest>();
     public ICollection<AttendanceRecord>? AttendanceRecords { get; set; } = new List<AttendanceRecord>();
     public ICollection<Payslip>? Payslips { get; set; } = new List<Payslip>();
+    
+    [Required]
+    public string ApplicationUserId { get; set; }
+
+    // 2. The Navigation property
 }

@@ -1,12 +1,6 @@
 ﻿using HRMS.Data;
-using HRMS.Interfaces;
-using HRMS.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace HRMS.Repositories;
 
@@ -14,10 +8,26 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
 {
     private readonly ApplicationDbContext _context;
 
+    public async Task<Employee> UpdateEmployeeAsync(Employee entity)
+    {
+        var local = _dbSet.Local.FirstOrDefault(e => e.EmployeeID == entity.EmployeeID);
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
+
+        _dbSet.Attach(entity);
+        _context.Entry(entity).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+
+        return entity;
+    }
+
     public EmployeeRepository(ApplicationDbContext context) : base(context)
     {
         _context = context;
     }
+    
 
     public async Task<IEnumerable<Employee>> GetActiveEmployeesAsync()
     {
@@ -40,4 +50,14 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
         }
     }
 
+
+
+    public async Task<IEnumerable<Employee>> GetEmployeesByDepartmentAsync(int departmentId)
+    {
+
+        return await _dbSet
+            .Where(e => e.DepartmentID == departmentId)
+            .ToListAsync();
+    }
 }
+

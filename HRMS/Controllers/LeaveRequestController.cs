@@ -1,9 +1,6 @@
-﻿using HRMS.Models;
-using HRMS.ViewModels.Employee;
-using Microsoft.AspNetCore.Authorization;
+﻿using HRMS.ViewModels.Employee;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HRMS.Controllers
 {
@@ -11,33 +8,19 @@ namespace HRMS.Controllers
     {
         private readonly ILeaveRequestServices _service;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUnitOfWork _unitOfWork;
 
-
-        public LeaveRequestController(ILeaveRequestServices service, UserManager<ApplicationUser> userManager , IUnitOfWork unitOfWork)
+        public LeaveRequestController(ILeaveRequestServices service, UserManager<ApplicationUser> userManager)
         {
             _service = service;
             _userManager = userManager;
-            _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Roles = "Employee,HR")]
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("HR"))
-            {
-                var model = await _service.GetAllAsync();
-                return View("HRIndex", model);
-            }
-            else // Employee
-            {
-                var user = await _userManager.GetUserAsync(User);
-                var model = await _service.GetMyRequestsAsync(user.Id);
-                return View("EmployeeIndex", model);
-            }
+            var model = await _service.GetAllAsync();
+            return View(model);
         }
 
-        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> MyRequests()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -45,25 +28,9 @@ namespace HRMS.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Employee")]
         [HttpGet]
-        public async Task<IActionResult> Create() {
+        public IActionResult Create() => View();
 
-            var leaveTypes = await _unitOfWork.LeaveType.GetAllAsync();
-
-            var viewModel = new CreateLeaveRequestViewModel
-            {
-                LeaveTypes = leaveTypes.Select(x => new SelectListItem
-                {
-                    Value = x.LeaveTypeID.ToString(),
-                    Text = x.TypeName
-                })
-            };
-
-            return View(viewModel);
-        }
-
-        [Authorize(Roles = "Employee")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateLeaveRequestViewModel model)
         {
@@ -76,48 +43,23 @@ namespace HRMS.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Approve(int id)
         {
-            // hear can the hr approve the request
-            var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
-            await _service.ApproveAsync(id, emp.EmployeeID);
+            // لاحقًا هنجيب HR ID من المستخدم الحالي
+            await _service.ApproveAsync(id, 1);
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "HR")]
-        
         public async Task<IActionResult> Reject(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
-            await _service.RejectAsync(id, emp.EmployeeID, "Not eligible");
+            await _service.RejectAsync(id, 1, "Not eligible");
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Cancel(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
-            await _service.CancelAsync(id, emp.EmployeeID);
+            await _service.CancelAsync(id, 1);
             return RedirectToAction(nameof(MyRequests));
         }
-
-        [Authorize(Roles = "Employee")]
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var userId = _userManager.GetUserId(User);
-            var result = await _service.DeleteAsync(id, userId);
-
-            if (!result)
-                return NotFound();
-
-            TempData["Success"] = "Leave request deleted successfully.";
-            return RedirectToAction(nameof(MyRequests));
-        }
-
     }
 }
