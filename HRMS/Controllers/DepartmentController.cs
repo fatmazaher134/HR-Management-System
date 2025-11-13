@@ -1,7 +1,6 @@
-<<<<<<< HEAD
+
 ﻿using HRMS.Interfaces.Services; // <-- التأكد من وجودها
-=======
->>>>>>> origin/Test
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,11 +17,9 @@ namespace HRMS.Controllers
         public DepartmentController(IDepartmentServices deptService, IEmployeeServices empService)
         {
             _deptService = deptService;
-<<<<<<< HEAD
-            _empService = empService; 
-=======
+
             _empService = empService;
->>>>>>> origin/Test
+
         }
 
         private async Task<IEnumerable<SelectListItem>> GetEmployeesSelectListAsync()

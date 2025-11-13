@@ -1,8 +1,6 @@
-<<<<<<< HEAD
-﻿using HRMS.ViewModels;
-=======
+
 ﻿using HRMS.ViewModels.Account;
->>>>>>> origin/Test
+
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
