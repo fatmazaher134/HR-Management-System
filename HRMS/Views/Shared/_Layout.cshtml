@@ -102,16 +102,19 @@
                                     </ul>
                                 </li>
                             }
-                            @* @if (User.IsInRole("HR") || User.IsInRole("Employee")) *@
-                            @* { *@
+                            @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("Employee"))
+                            {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="LeaveRequest" asp-action="Index">Leave Request</a>
                                 </li>
-                            @* } *@
+                            }
                             @if (User.IsInRole("HR") || User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="SalaryComponents" asp-action="Index">Salary Componentst</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Payroll" asp-action="Index">Payroll</a>
                                 </li>
                             }
 

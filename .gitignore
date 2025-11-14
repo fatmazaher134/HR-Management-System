@@ -4,7 +4,6 @@
 ## Get latest from `dotnet new gitignore`
 
 ## ignore the appsettings.json
-HRMS/appsettings.json
 # dotenv files
 .env
 

@@ -1,0 +1,61 @@
+﻿@model GeneratePayrollViewModel
+@{
+    ViewData["Title"] = "Generate New Payslips";
+    // Create a list of English month names
+    var monthList = Enumerable.Range(1, 12).Select(i => new SelectListItem
+    {
+        Value = i.ToString(),
+        Text = new DateTime(2000, i, 1).ToString("MMMM", new System.Globalization.CultureInfo("en-US")),
+        Selected = (i == Model.Month)
+    });
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Select the month and year to begin the process of calculating and generating payslips for all active employees.
+                    </p>
+
+                    <form asp-action="Generate" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Month" class="form-label">Month</label>
+                            <select asp-for="Month" asp-items="monthList" class="form-select"></select>
+                            <span asp-validation-for="Month" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Year" class="form-label">Year</label>
+                            <input asp-for="Year" type="number" class="form-control" />
+                            <span asp-validation-for="Year" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-calculator"></i> Start Generation
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

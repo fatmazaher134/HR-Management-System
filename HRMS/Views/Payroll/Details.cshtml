@@ -1,0 +1,112 @@
+﻿@model PayslipDetailsViewModel
+@{
+    ViewData["Title"] = "Payslip Details";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card shadow-lg border-primary">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        Payslip for: @(new DateTime(Model.Year, Model.Month, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("en-US")))
+                    </h4>
+                    <span class="badge bg-light text-dark">ID: @Model.PayslipID</span>
+                </div>
+                <div class="card-body p-4">
+
+                    <h5 class="border-bottom pb-2 mb-3">Employee Information</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Name:</strong> @Model.EmployeeFullName
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Email:</strong> @Model.EmployeeEmail
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <strong>Generated Date:</strong> @Model.GeneratedDate.ToString("g")
+                        </div>
+                    </div>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Salary Summary</h5>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <h6 class="text-muted">Gross Salary</h6>
+                                    <h4 class="text-success">@Model.GrossSalary.ToString("N2")</h4>
+                                </div>
+                                <div class="col-4">
+                                    <h6 class="text-muted">Total Deductions</h6>
+                                    <h4 class="text-danger">(@Model.TotalDeductions.ToString("N2"))</h4>
+                                </div>
+                                <div class="col-4">
+                                    <h6 class="text-muted">Net Salary</h6>
+                                    <h4 class="text-primary fw-bold">@Model.NetSalary.ToString("N2")</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-plus-circle-fill text-success"></i> Allowances & Earnings</h5>
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Details.Where(d => d.ComponentType == ComponentType.Allowance))
+                                    {
+                                        <tr>
+                                            <td>@item.ComponentName</td>
+                                            <td class="text-end">@item.Amount.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-dash-circle-fill text-danger"></i> Deductions</h5>
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Details.Where(d => d.ComponentType == ComponentType.Deduction))
+                                    {
+                                        <tr>
+                                            <td>@item.ComponentName</td>
+                                            <td class="text-end">@item.Amount.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="text-start">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left-short"></i> Back to List
+                        </a>
+                        <button onclick="window.print()" class="btn btn-secondary">
+                            <i class="bi bi-printer"></i> Print
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
