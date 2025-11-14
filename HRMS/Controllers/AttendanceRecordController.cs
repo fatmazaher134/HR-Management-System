@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace HRMS.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class AttendanceRecordController : Controller
     {
         private readonly IAttendanceRecordServices _attendanceService;
@@ -33,6 +33,7 @@ namespace HRMS.Controllers
         }
 
         // GET: Employee's Attendance Dashboard
+        
         public async Task<IActionResult> Index()
         {
             var empId = await GetCurrentEmployeeIdAsync();

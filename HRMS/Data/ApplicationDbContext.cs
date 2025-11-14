@@ -42,11 +42,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
 
 
-
-
-
-
-
+        modelBuilder.Entity<SalaryComponent>().HasData(
+                  new SalaryComponent
+                  {
+                      ComponentID  = 1,
+                      ComponentName = "Basic Salary",
+                      ComponentType = ComponentType.Allowance
+                  }
+                  );
 
 
 

@@ -9,7 +9,7 @@ namespace HRMS.Interfaces.Services
         Task<PayslipDetailsViewModel?> GetPayslipDetailsAsync(int payslipId);
 
         Task<PayslipDetailsViewModel?> GetMyPayslipDetailsAsync(int payslipId, string applicationUserId);
-
+        Task<IEnumerable<PayslipViewModel>> GetMyPayslipsAsync(string applicationUserId);
         Task DeletePayslip(int id);
 
         Task<IEnumerable<PayslipSummaryViewModel>> GetAllAsync();

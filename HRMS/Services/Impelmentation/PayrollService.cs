@@ -1,4 +1,6 @@
 ﻿
+using HRMS.Models;
+
 namespace HRMS.Services.Impelmentation
 {
     public class PayrollService : IPayrollService
@@ -146,6 +148,25 @@ namespace HRMS.Services.Impelmentation
             }
 
             return MapToDetailsViewModel(payslip);
+        }
+
+
+        public async Task<IEnumerable<PayslipViewModel>> GetMyPayslipsAsync(string applicationUserId)
+        {
+            var payslips = await _unitOfWork.Payslip.FindAllAsync(
+                criteria: p => p.Employee.ApplicationUserId == applicationUserId,
+                includes: new[] { "Employee" }
+            );
+
+            return payslips.Select(p => new PayslipViewModel
+            {
+                PayslipID = p.PayslipID,
+                EmployeeName = p.Employee?.FirstName + " " + p.Employee?.LastName,
+                Month = p.Month,
+                Year = p.Year,
+                NetSalary = p.NetSalary,
+                PayDate = p.GeneratedDate
+            });
         }
 
         private PayslipDetailsViewModel MapToDetailsViewModel(Payslip payslip)

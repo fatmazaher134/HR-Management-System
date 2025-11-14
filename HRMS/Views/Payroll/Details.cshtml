@@ -97,7 +97,7 @@
                     <hr />
 
                     <div class="text-start">
-                        <a asp-action="Index" class="btn btn-outline-secondary">
+                        <a asp-action="@(User.IsInRole("Employee") ? "MyPayslips" : "Index")" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left-short"></i> Back to List
                         </a>
                         <button onclick="window.print()" class="btn btn-secondary">

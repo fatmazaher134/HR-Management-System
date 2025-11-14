@@ -1,10 +1,11 @@
 ﻿using HRMS.ViewModels.Payroll;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HRMS.Controllers
 {
-    [Authorize(Roles = "Admin,HR")]
+    [Authorize]
     public class PayrollController : Controller
     {
         private readonly IPayrollService _payrollService;
@@ -17,6 +18,7 @@ namespace HRMS.Controllers
 
         // [GET] /Payroll/
         [HttpGet]
+        [Authorize(Roles = "Admin, HR")]
         public async Task<IActionResult> Index()
         {
             // جلب ملخص الرواتب مع اسم الموظف
@@ -79,6 +81,20 @@ namespace HRMS.Controllers
             
             TempData["SuccessMessage"] = "payslip deleted successfully.";
             return RedirectToAction(nameof(Index));
+        }
+        
+
+        [Authorize(Roles = "HR,Employee")]
+        public async Task<IActionResult> MyPayslips()
+        {
+            var userId = GetCurrentUserId();
+            var model = await _payrollService.GetMyPayslipsAsync(userId);
+            return View(model);
+        }
+
+        private string GetCurrentUserId()
+        {
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
     }
 }
