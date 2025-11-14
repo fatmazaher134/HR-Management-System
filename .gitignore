@@ -489,3 +489,5 @@ $RECYCLE.BIN/
 /.vs/
 /Properties/launchSettings.json
 /appsettings.Development.json
+
+/HRMS/appsettings.json
