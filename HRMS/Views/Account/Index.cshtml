@@ -1,4 +1,6 @@
-﻿@using HRMS.ViewModels
+﻿
+
+@using HRMS.ViewModels
 @using HRMS.ViewModels.Account
 @model ManageAccountViewModel
 @{
@@ -50,7 +52,7 @@
 </style>
 
 <div class="container py-5">
-    
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-secondary fw-light">My Account</h2>
         <nav aria-label="breadcrumb">
@@ -96,30 +98,26 @@
                             <a asp-controller="Employee" asp-action="Index" class="list-group-item list-group-item-action">
                                 <i class="fas fa-users fa-fw me-3"></i> Manage All Employees
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action text-danger">
-                                <i class="fas fa-cogs fa-fw me-3"></i> System Settings
-                            </a>
                         }
 
-                        @if (Model.IsHR && !Model.IsAdmin)
+                        @if (Model.IsHR)
                         {
-                            <a asp-controller="Employees" asp-action="Index" class="list-group-item list-group-item-action">
-                                <i class="fas fa-user-tie fa-fw me-3"></i> Manage Employees
+                            <a asp-controller="LeaveRequest" asp-action="Index" class="list-group-item list-group-item-action">
+                                <i class="fas fa-calendar-check fa-fw me-3"></i> Approve & Reject Leaves
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <i class="fas fa-calendar-check fa-fw me-3"></i> Approve Leaves
+
+                            <a asp-controller="Payroll" asp-action="Index" class="list-group-item list-group-item-action">
+                                <i class="fas fa-file-invoice-dollar fa-fw me-3"></i> View Payslips
                             </a>
                         }
 
                         @if (!Model.IsAdmin && !Model.IsHR)
                         {
-                            <a href="#" class="list-group-item list-group-item-action">
+                            <a asp-controller="LeaveRequest" asp-action="Index" class="list-group-item list-group-item-action">
                                 <i class="fas fa-calendar-plus fa-fw me-3"></i> Request Leave
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <i class="fas fa-file-invoice-dollar fa-fw me-3"></i> View Payslips
-                            </a>
                         }
+
                     </div>
                 </div>
             </div>
@@ -146,8 +144,7 @@
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
                                     <label asp-for="UserName" class="form-label-styled"></label>
-                                    <input asp-for="UserName" class="form-control bg-light"/>
-                                    <small class="text-muted" style="font-size: 0.7rem;">Username cannot be changed.</small>
+                                    <input asp-for="UserName" class="form-control bg-light" readonly /> <small class="text-muted" style="font-size: 0.7rem;">Username cannot be changed.</small>
                                 </div>
                             </div>
                         </div>

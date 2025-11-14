@@ -1,5 +1,8 @@
+﻿using HRMS.Interfaces.Services; 
+using HRMS.Models;
 using HRMS.ViewModels;
 using HRMS.ViewModels.Dashboard;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -9,10 +12,18 @@ namespace HRMS.Controllers
     public class HomeController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmployeeServices _employeeServices;
+        private readonly ILeaveRequestServices _leaveRequestServices;
 
-        public HomeController(UserManager<ApplicationUser> userManager)
+        public HomeController(
+            UserManager<ApplicationUser> userManager,
+            IEmployeeServices employeeServices,
+            ILeaveRequestServices leaveRequestServices
+            )
         {
             _userManager = userManager;
+            _employeeServices = employeeServices;
+            _leaveRequestServices = leaveRequestServices;
         }
 
         public async Task<IActionResult> Index()
@@ -23,24 +34,58 @@ namespace HRMS.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User);
+            var model = new DashboardViewModel(); 
 
-            // TODO: In the future, inject IEmployeeService and ILeaveService 
-            // to fetch real data from the database.
+            bool isHR = await _userManager.IsInRoleAsync(user, "HR") ||
+                        await _userManager.IsInRoleAsync(user, "Admin");
 
-            var model = new DashboardViewModel
+            if (isHR)
             {
-                // Mock Data for now
-                LeaveBalance = 21,
-                ApprovedLeavesThisYear = 4,
-                TotalEmployees = 150,
-                PendingLeaveRequests = 8,
-                NewHiresThisMonth = 3
-            };
+
+                var allEmployees = await _employeeServices.GetAllAsync();
+                model.TotalEmployees = allEmployees.Count();
+
+                var allRequests = await _leaveRequestServices.GetAllAsync();
+                model.PendingLeaveRequests = allRequests.Count(r => r.Status == "Pending");
+            }
+            else
+            {
+
+
+                const int annualLeaveBalance = 21;
+                int currentYear = DateTime.Now.Year;
+
+                var employee = await _employeeServices.GetByUserIdAsync(user.Id);
+
+                if (employee != null)
+                {
+                    var myRequests = await _leaveRequestServices.GetMyRequestsAsync(user.Id);
+
+                    var approvedRequestsThisYear = myRequests
+                        .Where(r => r.Status == "Approved" && r.StartDate.Year == currentYear)
+                        .ToList();
+
+                    int totalDaysUsed = 0;
+                    foreach (var req in approvedRequestsThisYear)
+                    {
+                        totalDaysUsed += (req.EndDate - req.StartDate).Days ;
+                    }
+
+
+                    model.LeaveBalance = annualLeaveBalance - totalDaysUsed;
+
+                    model.ApprovedLeavesThisYear = approvedRequestsThisYear.Count();
+                }
+                else
+                {
+                    model.LeaveBalance = annualLeaveBalance;
+                    model.ApprovedLeavesThisYear = 0;
+                }
+            }
 
             return View(model);
         }
 
-        
         public IActionResult Privacy()
         {
             return View();

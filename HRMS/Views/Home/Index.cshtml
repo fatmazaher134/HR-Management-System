@@ -1,4 +1,4 @@
-﻿@model HRMS.ViewModels.Dashboard.DashboardViewModel
+﻿@* @model HRMS.ViewModels.Dashboard.DashboardViewModel
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<ApplicationUser> UserManager
 
@@ -202,6 +202,230 @@
                                 <i class="fas fa-user-plus me-2"></i> Register New Employee
                             </a>
                         }
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+
+                <p class="small text-muted mt-2">Human Resource Management System v1.0</p>
+            </div>
+        </div>
+    </div>
+</div> *@
+
+@model HRMS.ViewModels.Dashboard.DashboardViewModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var user = await UserManager.GetUserAsync(User);
+    var isHR = User.IsInRole("HR") || User.IsInRole("Admin");
+}
+
+<style>
+    /* Dashboard Specific Styles */
+    .stat-card {
+        transition: transform 0.2s;
+        border-left: 5px solid;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        }
+
+    /* Card Color Accents */
+    .card-blue {
+        border-left-color: #4e73df;
+    }
+
+    .card-green {
+        border-left-color: #1cc88a;
+    }
+
+    .card-orange {
+        border-left-color: #f6c23e;
+    }
+
+    .card-cyan {
+        border-left-color: #36b9cc;
+    }
+
+    .welcome-banner {
+        background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        border-radius: 0.5rem;
+    }
+</style>
+
+<div class="container-fluid py-4">
+
+    <div class="welcome-banner p-4 mb-4 shadow-sm d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold mb-1">Welcome back, @user?.FullName!</h2>
+            <p class="mb-0 opacity-75">Here is what's happening in the organization today.</p>
+        </div>
+        <div class="d-none d-md-block text-white-50">
+            <i class="fas fa-calendar-alt me-2"></i> @DateTime.Now.ToString("D")
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        @if (User.IsInRole("HR") || User.IsInRole("Admin"))
+        {
+
+
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow-sm h-100 py-2 stat-card card-green">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Total Employees
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalEmployees</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300 opacity-25"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow-sm h-100 py-2 stat-card card-orange">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Pending Requests
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingLeaveRequests</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clipboard-list fa-2x text-gray-300 opacity-25"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow-sm h-100 py-2 stat-card card-blue">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    My Leave Balance
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.LeaveBalance Days</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-suitcase-rolling fa-2x text-gray-300 opacity-25"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow-sm h-100 py-2 stat-card card-green">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Approved (YTD)
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ApprovedLeavesThisYear</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check-circle fa-2x text-gray-300 opacity-25"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 py-2 stat-card card-cyan">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Quick Action
+                            </div>
+                            <a asp-controller="Account" asp-action="Index" class="small stretched-link text-decoration-none fw-bold">Update Profile →</a>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-cog fa-2x text-gray-300 opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Announcements</h6>
+                    <small class="text-muted">Latest updates</small>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold text-dark">Annual Performance Review</h6>
+                                <small class="text-muted">3 days ago</small>
+                            </div>
+                            <p class="mb-1 small text-muted">Please submit your self-assessment forms by the end of this week.</p>
+                        </div>
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold text-dark">Office Maintenance</h6>
+                                <small class="text-muted">1 week ago</small>
+                            </div>
+                            <p class="mb-1 small text-muted">The server room will be undergoing maintenance on Saturday.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-secondary">Quick Shortcuts</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+
+                        @if (User.IsInRole("HR") || User.IsInRole("Admin"))
+                        {
+                        <a asp-controller="LeaveRequest" asp-action="Index" class="btn btn-outline-primary text-start">
+                                <i class="fas fa-plane-departure me-2"></i> Approve & Reject Leaves
+                        </a>
+
+                        <a asp-controller="Payroll" asp-action="Index" class="btn btn-outline-secondary text-start">
+                            <i class="fas fa-file-invoice-dollar me-2"></i> Download Payslip
+                        </a>
+                        }
+                        @if (!User.IsInRole("HR") && !User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="LeaveRequest" asp-action="Create" class="btn btn-outline-primary text-start">
+                                <i class="fas fa-plane-departure me-2"></i> Apply for Leave
+                            </a>
+                            
+                        }
+
                     </div>
                 </div>
             </div>
