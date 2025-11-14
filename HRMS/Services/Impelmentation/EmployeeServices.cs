@@ -215,6 +215,8 @@ namespace HRMS.Services.Impelmentation
                 employee.Address = model.Address;
 
                 await _empRepo.UpdateAsync(employee);
+                await _unitOfWork.SaveChangesAsync();
+
                 return true;
             }
             catch

@@ -25,7 +25,7 @@
                 <strong>Note:</strong> You can only modify your basic data. For other modifications, please contact the Human Resources Department.
             </div>
 
-            <form asp-action="EditBasicInfo" method="post">
+            <form asp-action="EditBasicInfo" asp-route-id="@Model.EmployeeID" method="post">
                 <input type="hidden" asp-for="EmployeeID" />
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 

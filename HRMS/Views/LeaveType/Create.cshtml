@@ -1,0 +1,83 @@
+﻿@model HRMS.ViewModels.LeaveType.LeaveTypeFormViewModel
+
+@{
+    ViewData["Title"] = "Add New Leave Type";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="text-success">
+                <i class="fas fa-plus-circle"></i> Add New Leave Type
+            </h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <h5 class="text-primary border-bottom pb-2">
+                            <i class="fas fa-info-circle"></i> Leave Type Information
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label asp-for="TypeName" class="form-label"></label>
+                        <input asp-for="TypeName" class="form-control" placeholder="e.g., Annual Leave, Sick Leave" />
+                        <span asp-validation-for="TypeName" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label asp-for="DefaultBalance" class="form-label"></label>
+                        <input asp-for="DefaultBalance" class="form-control" type="number" min="0" max="365" />
+                        <span asp-validation-for="DefaultBalance" class="text-danger small"></span>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle"></i> Number of days per year for this leave type
+                        </small>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-lightbulb"></i> Examples:
+                    </h6>
+                    <ul class="mb-0">
+                        <li><strong>Annual Leave:</strong> 21 days</li>
+                        <li><strong>Sick Leave:</strong> 14 days</li>
+                        <li><strong>Emergency Leave:</strong> 5 days</li>
+                    </ul>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save"></i> Save Leave Type
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

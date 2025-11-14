@@ -12,6 +12,9 @@
             </h2>
         </div>
         <div class="col-md-6 text-end">
+            <a asp-controller="LeaveRequest" asp-action="Create" class="btn btn-success me-2">
+                <i class="fas fa-plus"></i> Request Leave
+            </a>
             <a asp-action="Edit" asp-route-id="@Model.EmployeeID" class="btn btn-warning">
                 <i class="fas fa-edit"></i> Edit My Info
             </a>
@@ -202,7 +205,7 @@
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-warning w-100 p-3">
+                            <a asp-controller="LeaveRequest" asp-action="MyRequests" class="btn btn-outline-warning w-100 p-3">
                                 <i class="fas fa-umbrella-beach fa-2x mb-2"></i>
                                 <p class="mb-0">My Leave Requests</p>
                             </a>

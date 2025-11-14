@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
+
 namespace HRMS.ViewModels.Employee
 {
     public class CreateLeaveRequestViewModel
@@ -18,6 +19,6 @@ namespace HRMS.ViewModels.Employee
         public string? Comments { get; set; }
 
         // dropdown to select leave type
-        public IEnumerable<LeaveType>? LeaveTypes { get; set; }
+        public IEnumerable<Models.LeaveType>? LeaveTypes { get; set; }
     }
 }

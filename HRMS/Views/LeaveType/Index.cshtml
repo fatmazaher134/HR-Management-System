@@ -1,0 +1,111 @@
+﻿@model IEnumerable<HRMS.ViewModels.LeaveType.LeaveTypeViewModel>
+
+@{
+    ViewData["Title"] = "Leave Types";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="text-primary">
+                <i class="fas fa-tag"></i> Leave Types
+            </h2>
+        </div>
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="col-md-6 text-end">
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add New Leave Type
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Leave Type Name</th>
+                            <th>Default Balance (Days)</th>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <th class="text-center">Actions</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var leaveType in Model)
+                            {
+                                <tr>
+                                    <td>@leaveType.LeaveTypeID</td>
+                                    <td>
+                                        <i class="fas fa-tag text-primary"></i>
+                                        <strong>@leaveType.TypeName</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@leaveType.DefaultBalance Days</span>
+                                    </td>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@leaveType.LeaveTypeID"
+                                                   class="btn btn-sm btn-info" title="Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@leaveType.LeaveTypeID"
+                                                   class="btn btn-sm btn-warning" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@leaveType.LeaveTypeID"
+                                                   class="btn btn-sm btn-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                    <p>No Leave Types Available</p>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Create" class="btn btn-primary">
+                                            <i class="fas fa-plus"></i> Add First Leave Type
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
