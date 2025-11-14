@@ -80,6 +80,23 @@
                                 </a>
                             </li>
 
+                            @if (User.IsInRole("Employee"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="AttendanceRecord" asp-action="Index">
+                                        <i class="bi bi-clock-fill me-1"></i> My Attendance
+                                    </a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Admin") || User.IsInRole("HR"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="AttendanceRecord" asp-action="List">
+                                        <i class="bi bi-person-lines-fill me-1"></i> Manage Attendance
+                                    </a>
+                                </li>
+                            }
+
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="LeaveRequest" asp-action="Index">
                                     <i class="fas fa-calendar-check me-1"></i> Leaves
@@ -110,7 +127,7 @@
                             @if (User.IsInRole("HR") || User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="SalaryComponents" asp-action="Index">Salary Componentst</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SalaryComponents" asp-action="Index">Salary Components</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Payroll" asp-action="Index">Payroll</a>
@@ -127,7 +144,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Index">Employees</a>
                             </li>
                             <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="JobTitle" asp-action="Index">Job Titles</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="JobTitle" asp-action="Index">Job Titles</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="MyProfile">My profile</a>
