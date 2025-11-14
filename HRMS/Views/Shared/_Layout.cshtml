@@ -80,23 +80,6 @@
                                 </a>
                             </li>
 
-                            @if (User.IsInRole("Employee"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="AttendanceRecord" asp-action="Index">
-                                        <i class="bi bi-clock-fill me-1"></i> My Attendance
-                                    </a>
-                                </li>
-                            }
-                            @if (User.IsInRole("Admin") || User.IsInRole("HR"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="AttendanceRecord" asp-action="List">
-                                        <i class="bi bi-person-lines-fill me-1"></i> Manage Attendance
-                                    </a>
-                                </li>
-                            }
-
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="LeaveRequest" asp-action="Index">
                                     <i class="fas fa-calendar-check me-1"></i> Leaves
@@ -115,6 +98,7 @@
                                         <li><a class="dropdown-item small" asp-controller="JobTitle" asp-action="Index">Job Titles</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item small" asp-controller="Employee" asp-action="Index">All Employees</a></li>
+                                        <li><a class="dropdown-item small" asp-controller="LeaveType" asp-action="Index">Leave Type</a></li>
                                     </ul>
                                 </li>
                             }
@@ -127,7 +111,7 @@
                             @if (User.IsInRole("HR") || User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="SalaryComponents" asp-action="Index">Salary Components</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SalaryComponents" asp-action="Index">Salary Componentst</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Payroll" asp-action="Index">Payroll</a>
@@ -137,18 +121,24 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Index">Employees</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="JobTitle" asp-action="Index">Job Titles</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="MyProfile">My profile</a>
-                            </li>
+                            @if (User.IsInRole("Admin") || User.IsInRole("HR"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Index">Employees</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="JobTitle" asp-action="Index">Job Titles</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Employee") || User.IsInRole("HR"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="MyProfile">My profile</a>
+                                </li>
+                            }
                         </ul>
 
                         <partial name="_LoginPartial" />

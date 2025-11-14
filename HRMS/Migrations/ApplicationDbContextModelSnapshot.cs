@@ -586,7 +586,7 @@ namespace HRMS.Migrations
                     b.HasOne("HRMS.Models.Department", "Department")
                         .WithMany("Employees")
                         .HasForeignKey("DepartmentID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HRMS.Models.JobTitle", "JobTitle")
                         .WithMany("Employees")
