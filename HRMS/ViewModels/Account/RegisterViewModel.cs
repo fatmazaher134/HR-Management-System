@@ -1,6 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
-namespace HRMS.ViewModels
+namespace HRMS.ViewModels.Account
 {
     public class RegisterViewModel
     {
@@ -31,5 +33,11 @@ namespace HRMS.ViewModels
 
         [Required]
         public string Address { get; set; }
+
+        [Required(ErrorMessage = "Please select a role.")]
+        public string SelectedRole { get; set; }
+        
+        [BindNever]
+        public List<SelectListItem> Options { get; set; }
     }
 }

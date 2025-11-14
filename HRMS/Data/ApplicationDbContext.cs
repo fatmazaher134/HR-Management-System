@@ -23,14 +23,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                       .HasOne(d => d.Manager)
                       .WithMany() 
                       .HasForeignKey(d => d.ManagerID)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.SetNull);
         // cascade loop prevention
 
         modelBuilder.Entity<Employee>()
                     .HasOne(e => e.Department)
                     .WithMany(d => d.Employees)
                     .HasForeignKey(e => e.DepartmentID)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.SetNull);
 
 
             modelBuilder.Entity<LeaveRequest>()
@@ -42,11 +42,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
 
 
-
-
-
-
-
+        modelBuilder.Entity<SalaryComponent>().HasData(
+                  new SalaryComponent
+                  {
+                      ComponentID  = 1,
+                      ComponentName = "Basic Salary",
+                      ComponentType = ComponentType.Allowance
+                  }
+                  );
 
 
 
@@ -58,6 +61,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         //        .HasForeignKey(l => l.ApprovedByHRID)
         //        .OnDelete(DeleteBehavior.Restrict);
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<ApplicationUser>()
+        .HasOne(a => a.Employee)          // ApplicationUser has one Employee
+        .WithOne(e => e.ApplicationUser) // Employee has one ApplicationUser
+        .HasForeignKey<Employee>(e => e.ApplicationUserId) // The foreign key is Employee.ApplicationUserId
+        .OnDelete(DeleteBehavior.Cascade); 
 
     }
 

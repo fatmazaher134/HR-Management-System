@@ -1,49 +1,104 @@
-﻿using HRMS.Interfaces.Services;
+﻿using HRMS.Interfaces; 
+using HRMS.Interfaces.Services;
 using HRMS.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace HRMS.Services.Impelmentation
 {
     public class AttendanceRecordServices : IAttendanceRecordServices
     {
-        public Task<AttendanceRecord> AddAsync(AttendanceRecord record)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public AttendanceRecordServices(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
         }
 
-        public Task<bool> CheckInAsync(int employeeId)
+
+
+        public async Task<bool> CheckInAsync(int employeeId)
         {
-            throw new NotImplementedException();
+            var employeeExists = await _unitOfWork.Employee.IsExistAsync(e => e.EmployeeID == employeeId && e.IsActive);
+            if (!employeeExists) return false;
+
+            var activeShifts = await _unitOfWork.AttendanceRecord
+                .FindAllAsync(r => r.EmployeeID == employeeId && r.CheckOutTime == null);
+
+            var currentShift = activeShifts.OrderByDescending(r => r.CheckInTime).FirstOrDefault();
+            if (currentShift != null) return false;
+
+            var now = DateTime.UtcNow;
+            var record = new AttendanceRecord
+            {
+                EmployeeID = employeeId,
+                CheckInTime = now,
+                Date = now.Date
+            };
+
+            await _unitOfWork.AttendanceRecord.AddAsync(record);
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
-        public Task<bool> CheckOutAsync(int employeeId)
+        public async Task<bool> CheckOutAsync(int employeeId)
         {
-            throw new NotImplementedException();
+            var employeeExists = await _unitOfWork.Employee.IsExistAsync(e => e.EmployeeID == employeeId && e.IsActive);
+            if (!employeeExists) return false;
+
+            var activeShifts = await _unitOfWork.AttendanceRecord
+                 .FindAllAsync(r => r.EmployeeID == employeeId && r.CheckOutTime == null);
+
+            var currentShift = activeShifts.OrderByDescending(r => r.CheckInTime).FirstOrDefault();
+            if (currentShift == null) return false;
+
+            currentShift.CheckOutTime = DateTime.UtcNow;
+
+            await _unitOfWork.AttendanceRecord.UpdateAsync(currentShift);
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
-        public Task<bool> DeleteAsync(int id)
+
+        public async Task<AttendanceRecord> AddAsync(AttendanceRecord record)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.AttendanceRecord.AddAsync(record);
         }
 
-        public Task<IEnumerable<AttendanceRecord>> GetAllAsync()
+        public async Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var record = await _unitOfWork.AttendanceRecord.GetByIdAsync(id);
+            if (record == null) return false;
+
+            await _unitOfWork.AttendanceRecord.DeleteAsync(record);
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
-        public Task<IEnumerable<AttendanceRecord>> GetByEmployeeIdAsync(int employeeId)
+        public async Task<IEnumerable<AttendanceRecord>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var includes = new string[] { "Employee" };
+            var records = await _unitOfWork.AttendanceRecord.FindAllAsync(criteria: null, includes: includes);
+            return records.OrderByDescending(r => r.CheckInTime);
         }
 
-        public Task<AttendanceRecord?> GetByIdAsync(int id)
+        public async Task<IEnumerable<AttendanceRecord>> GetByEmployeeIdAsync(int employeeId)
         {
-            throw new NotImplementedException();
+            var includes = new string[] { "Employee" };
+            var records = await _unitOfWork.AttendanceRecord
+                .FindAllAsync(r => r.EmployeeID == employeeId, includes);
+            return records.OrderByDescending(r => r.CheckInTime);
         }
 
-        public Task<bool> UpdateAsync(AttendanceRecord record)
+        public async Task<AttendanceRecord?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var includes = new string[] { "Employee" };
+            return await _unitOfWork.AttendanceRecord.FindAsync(r => r.AttendanceID == id, includes);
+        }
+
+        public async Task<bool> UpdateAsync(AttendanceRecord record)
+        {
+            await _unitOfWork.AttendanceRecord.UpdateAsync(record);
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
-
 }

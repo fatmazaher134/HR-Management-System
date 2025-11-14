@@ -13,11 +13,6 @@ public class Employee
     [Key]
     public int EmployeeID { get; set; }
 
-    // FK to AspNetUsers (string type because Identity uses GUID strings)
-    [ForeignKey("ApplicationUser")]
-    public string? UserId { get; set; }
-
-
     [Required, MaxLength(100)]
     public required string FirstName { get; set; }
 
@@ -46,21 +41,23 @@ public class Employee
     [ForeignKey("JobTitle")]
     public int? JobTitleID { get; set; }
 
-
-
-
-
+    public JobTitle? JobTitle { get; set; }
 
     public int? DepartmentID { get; set; }
 
     [ForeignKey(nameof(DepartmentID))]
     public Department? Department { get; set; }
-    public JobTitle? JobTitle { get; set; }
 
+
+
+    [Required]
+    public string ApplicationUserId { get; set; }
     public ApplicationUser? ApplicationUser { get; set; }
 
     public ICollection<EmployeeDocument>? Documents { get; set; } = new List<EmployeeDocument>();
     public ICollection<LeaveRequest>? LeaveRequests { get; set; } = new List<LeaveRequest>();
     public ICollection<AttendanceRecord>? AttendanceRecords { get; set; } = new List<AttendanceRecord>();
     public ICollection<Payslip>? Payslips { get; set; } = new List<Payslip>();
+
+
 }

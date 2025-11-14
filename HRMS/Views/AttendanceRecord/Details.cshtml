@@ -1,0 +1,53 @@
+﻿@model HRMS.Models.AttendanceRecord
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Attendance Record Details</h1>
+<h4 class="text-muted">Record ID: @Model.AttendanceID</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">Employee:</dt>
+            <dd class="col-sm-8">@(@Model.Employee != null ? $"{Model.Employee.FirstName} {Model.Employee.LastName}" : "N/A")</dd>
+
+            <dt class="col-sm-4">Employee ID:</dt>
+            <dd class="col-sm-8">@Model.EmployeeID</dd>
+
+            <dt class="col-sm-4">Date:</dt>
+            <dd class="col-sm-8">@Model.Date.ToLocalTime().ToString("dddd, dd MMMM yyyy")</dd>
+
+            <dt class="col-sm-4">Check-In Time:</dt>
+            <dd class="col-sm-8">@Model.CheckInTime.ToLocalTime().ToString("hh:mm:ss tt") (UTC: @Model.CheckInTime.ToString("HH:mm:ss"))</dd>
+
+            <dt class="col-sm-4">Check-Out Time:</dt>
+            <dd class="col-sm-8">
+                @if (Model.CheckOutTime.HasValue)
+                {
+                    @Model.CheckOutTime.Value.ToLocalTime().ToString("hh:mm:ss tt") <text>(UTC: @Model.CheckOutTime.Value.ToString("HH:mm:ss"))</text>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">Active Shift</span>
+                }
+            </dd>
+
+            @if (Model.CheckOutTime.HasValue)
+            {
+                var duration = Model.CheckOutTime.Value - Model.CheckInTime;
+                <dt class="col-sm-4">Duration:</dt>
+                <dd class="col-sm-8 text-success font-weight-bold">
+                    @($"{duration.Hours}h {duration.Minutes}m {duration.Seconds}s")
+                </dd>
+            }
+        </dl>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.AttendanceID" class="btn btn-warning">Edit</a> |
+    <a asp-action="List" class="btn btn-secondary">Back to List</a>
+</div>

@@ -1,0 +1,41 @@
+﻿@model IEnumerable<HRMS.ViewModels.SalaryComponent.SalaryComponentViewModel>
+
+@{
+    ViewData["Title"] = "Salary Components";
+}
+
+<h2 class="mb-4">Salary Components</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Add New Component</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ComponentName</td>
+                <td>@item.ComponentType</td>
+                <td class="d-flex">
+                    <a asp-action="Edit" asp-route-id="@item.ComponentID" class="btn btn-warning btn-sm me-1">Edit</a>
+
+                    <form asp-action="Delete" asp-route-id="@item.ComponentID" method="post">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this item?');">
+                            Delete
+                        </button>
+                    </form>
+
+                    <a asp-action="Details" asp-route-id="@item.ComponentID" class="btn btn-info btn-sm ms-1">Details</a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,4 +1,4 @@
-﻿using HRMS.ViewModels;
+﻿using HRMS.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 
 namespace HRMS.Interfaces.Services
@@ -10,5 +10,9 @@ namespace HRMS.Interfaces.Services
         Task<SignInResult> LoginUserAsync(LoginViewModel model);
 
         Task LogoutUserAsync();
+        List<string> GetAllRoles();
+        public Task<IdentityResult> UpdateProfileAsync(ManageAccountViewModel model);
+
+
     }
 }

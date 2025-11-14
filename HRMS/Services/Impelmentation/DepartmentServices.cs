@@ -1,40 +1,46 @@
-﻿using HRMS.Interfaces.Services;
-using HRMS.Models;
+﻿
 
 namespace HRMS.Services.Impelmentation
 {
     public class DepartmentServices : IDepartmentServices
     {
-        private readonly IDepartmentRepository _deptRepo;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DepartmentServices(IDepartmentRepository deptRepo)
+        public DepartmentServices(IUnitOfWork unitOfWork)
         {
-            _deptRepo = deptRepo;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<Department>> GetAllAsync()
         {
             var includes = new string[] { "Manager" };
-            
-            return await _deptRepo.FindAllAsync(criteria: null, includes: includes);
+
+            return await _unitOfWork.Department.FindAllAsync(criteria: null, includes: includes);
         }
 
         public async Task<Department?> GetByIdAsync(int id)
         {
             var includes = new string[] { "Manager" };
-            return await _deptRepo.FindAsync(d => d.DepartmentID == id, includes);
+
+            return await _unitOfWork.Department.FindAsync(d => d.DepartmentID == id, includes);
         }
 
         public async Task<Department> AddAsync(Department department)
         {
-            return await _deptRepo.AddAsync(department);
+            var addedDept = await _unitOfWork.Department.AddAsync(department);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return addedDept;
         }
 
         public async Task<bool> UpdateAsync(Department department)
         {
             try
             {
-                await _deptRepo.UpdateAsync(department);
+                await _unitOfWork.Department.UpdateAsync(department);
+
+                await _unitOfWork.SaveChangesAsync();
                 return true;
             }
             catch
@@ -45,7 +51,7 @@ namespace HRMS.Services.Impelmentation
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var department = await _deptRepo.GetByIdAsync(id);
+            var department = await _unitOfWork.Department.GetByIdAsync(id);
             if (department == null)
             {
                 return false;
@@ -53,7 +59,9 @@ namespace HRMS.Services.Impelmentation
 
             try
             {
-                await _deptRepo.DeleteAsync(department);
+                await _unitOfWork.Department.DeleteAsync(department);
+
+                await _unitOfWork.SaveChangesAsync();
                 return true;
             }
             catch

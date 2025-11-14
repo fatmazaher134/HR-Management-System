@@ -1,5 +1,4 @@
-﻿using HRMS.Models;
-using HRMS.ViewModels.Employee;
+﻿using HRMS.ViewModels.Employee;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,17 +13,17 @@ namespace HRMS.Controllers
         private readonly IUnitOfWork _unitOfWork;
 
 
-        public LeaveRequestController(ILeaveRequestServices service, UserManager<ApplicationUser> userManager , IUnitOfWork unitOfWork)
+        public LeaveRequestController(ILeaveRequestServices service, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
         {
             _service = service;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Roles = "Employee,HR")]
+        [Authorize(Roles = "Admin,Employee,HR")]
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("HR"))
+            if (User.IsInRole("HR") || User.IsInRole("Admin"))
             {
                 var model = await _service.GetAllAsync();
                 return View("HRIndex", model);
@@ -45,9 +44,10 @@ namespace HRMS.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         [HttpGet]
-        public async Task<IActionResult> Create() {
+        public async Task<IActionResult> Create()
+        {
 
             var leaveTypes = await _unitOfWork.LeaveType.GetAllAsync();
 
@@ -63,7 +63,7 @@ namespace HRMS.Controllers
             return View(viewModel);
         }
 
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateLeaveRequestViewModel model)
         {
@@ -73,39 +73,41 @@ namespace HRMS.Controllers
                 await _service.CreateAsync(model, user.Id);
                 return RedirectToAction(nameof(MyRequests));
             }
+            Console.WriteLine("Create POST called");
+
             return View(model);
         }
 
-        [Authorize(Roles = "HR")]
+
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Approve(int id)
         {
             // hear can the hr approve the request
             var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.ApplicationUserId == user.Id);
             await _service.ApproveAsync(id, emp.EmployeeID);
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "HR")]
-        
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Reject(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.ApplicationUserId == user.Id);
             await _service.RejectAsync(id, emp.EmployeeID, "Not eligible");
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "HR")]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Cancel(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == user.Id);
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.ApplicationUserId == user.Id);
             await _service.CancelAsync(id, emp.EmployeeID);
             return RedirectToAction(nameof(MyRequests));
         }
 
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {

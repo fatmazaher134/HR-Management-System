@@ -1,6 +1,5 @@
 using HRMS.DependencyInjection;
-using HRMS.Interfaces.Services;
-using HRMS.Services.Impelmentation;
+
 
 namespace HRMS
 {

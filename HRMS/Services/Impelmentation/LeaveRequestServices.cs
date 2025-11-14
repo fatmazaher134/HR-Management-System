@@ -33,7 +33,7 @@ namespace HRMS.Services.Impelmentation
         // to spacific HR employee
         public async Task<IEnumerable<LeaveRequestViewModel>> GetMyRequestsAsync(string userId)
         {
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == userId);
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.ApplicationUserId == userId);
             if (emp == null) return Enumerable.Empty<LeaveRequestViewModel>();
 
             var requests = await _unitOfWork.LeaveRequest.FindAllAsync(
@@ -53,7 +53,7 @@ namespace HRMS.Services.Impelmentation
 
         public async Task<bool> CreateAsync(CreateLeaveRequestViewModel model, string userId)
         {
-            var emp = await _unitOfWork.Employee.FindAsync(e => e.UserId == userId);
+            var emp = await _unitOfWork.Employee.FindAsync(e => e.ApplicationUserId == userId);
             if (emp == null) return false;
 
             var entity = new LeaveRequest
@@ -111,11 +111,11 @@ namespace HRMS.Services.Impelmentation
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
-        
+
         public async Task<bool> DeleteAsync(int id, string userId)
         {
             var request = await _unitOfWork.LeaveRequest
-                .FindAsync(lr => lr.LeaveRequestID == id && lr.Employee.UserId == userId);
+                .FindAsync(lr => lr.LeaveRequestID == id && lr.Employee.ApplicationUserId == userId);
 
             if (request == null)
                 return false;

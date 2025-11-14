@@ -9,4 +9,7 @@ namespace HRMS.Interfaces;
 
 public interface IPayslipRepository : IGenericRepository<Payslip>
 {
+    Task<Payslip?> GetPayslipWithDetailsAsync(int payslipId);
+
+    Task<Payslip?> GetMyPayslipWithDetailsAsync(int payslipId, string applicationUserId);
 }

@@ -1,0 +1,186 @@
+﻿
+
+@using HRMS.ViewModels
+@using HRMS.ViewModels.Account
+@model ManageAccountViewModel
+@{
+    ViewData["Title"] = "Manage Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Consistent Background */
+    body {
+        background-color: #f4f6f9;
+    }
+
+    /* Card Styling to match Login Theme */
+    .dashboard-card {
+        border: none;
+        border-top: 4px solid #007bff; /* Brand color */
+        background-color: #fff;
+        border-radius: 0.5rem;
+    }
+
+    /* Sidebar Link Styling */
+    .list-group-item {
+        border: none;
+        border-left: 3px solid transparent;
+        color: #6c757d;
+        transition: all 0.2s;
+    }
+
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+            border-left-color: #007bff;
+        }
+
+        .list-group-item.active-link {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+    /* Label Styling */
+    .form-label-styled {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #6c757d;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-secondary fw-light">My Account</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent p-0 m-0">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+            </ol>
+        </nav>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-success shadow-sm mb-4 border-0 border-start border-success border-3">
+            <i class="fas fa-check-circle me-2"></i> @Model.StatusMessage
+        </div>
+    }
+
+    <div class="row">
+
+        <div class="col-lg-4 mb-4">
+            <div class="card dashboard-card shadow-lg h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <span class="fa-stack fa-3x text-primary opacity-75">
+                            <i class="fas fa-circle fa-stack-2x"></i>
+                            <i class="fas fa-user fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </div>
+
+                    <h5 class="font-weight-bold mb-1">@Model.FullName</h5>
+                    <p class="text-muted small mb-4">@Model.Email</p>
+
+                    <hr class="my-4" />
+
+                    <div class="list-group list-group-flush text-start">
+                        <small class="text-uppercase text-muted fw-bold mb-2 ps-3" style="font-size: 0.7rem;">Quick Actions</small>
+
+                        @if (Model.IsAdmin)
+                        {
+                            <a asp-controller="Admin" asp-action="Index" class="list-group-item list-group-item-action">
+                                <i class="fas fa-users-cog fa-fw me-3"></i> Manage User Roles
+                            </a>
+                            <a asp-controller="Employee" asp-action="Index" class="list-group-item list-group-item-action">
+                                <i class="fas fa-users fa-fw me-3"></i> Manage All Employees
+                            </a>
+                        }
+
+                        @if (Model.IsHR)
+                        {
+                            <a asp-controller="LeaveRequest" asp-action="Index" class="list-group-item list-group-item-action">
+                                <i class="fas fa-calendar-check fa-fw me-3"></i> Approve & Reject Leaves
+                            </a>
+
+                            <a asp-controller="Payroll" asp-action="Index" class="list-group-item list-group-item-action">
+                                <i class="fas fa-file-invoice-dollar fa-fw me-3"></i> View Payslips
+                            </a>
+                        }
+
+                        @if (!Model.IsAdmin && !Model.IsHR)
+                        {
+                            <a asp-controller="LeaveRequest" asp-action="Index" class="list-group-item list-group-item-action">
+                                <i class="fas fa-calendar-plus fa-fw me-3"></i> Request Leave
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card dashboard-card shadow-lg">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h5 class="mb-0 text-primary fw-bold">Edit Profile</h5>
+                    <p class="text-muted small">Update your personal details below.</p>
+                </div>
+                <div class="card-body p-4">
+                    <form id="profile-form" method="post" asp-action="UpdateProfile">
+                        <div asp-validation-summary="All" class="alert alert-danger small"></div>
+                        <input type="hidden" asp-for="@Model.UserId" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="FullName" class="form-label-styled"></label>
+                                    <input asp-for="FullName" class="form-control" />
+                                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="UserName" class="form-label-styled"></label>
+                                    <input asp-for="UserName" class="form-control bg-light" readonly /> <small class="text-muted" style="font-size: 0.7rem;">Username cannot be changed.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="Email" class="form-label-styled"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="PhoneNumber" class="form-label-styled"></label>
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-end">
+                            <button type="reset" class="btn btn-light text-muted me-2">Cancel</button>
+                            <button id="update-profile-button" type="submit" class="btn btn-primary px-4 shadow-sm">
+                                <i class="fas fa-save me-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

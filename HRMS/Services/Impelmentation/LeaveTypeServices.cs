@@ -5,29 +5,66 @@ namespace HRMS.Services.Impelmentation
 {
     public class LeaveTypeServices : ILeaveTypeServices
     {
-        public Task<LeaveType> AddAsync(LeaveType leaveType)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public LeaveTypeServices(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
         }
 
-        public Task<bool> DeleteAsync(int id)
+        // Get all leave types
+        public async Task<IEnumerable<LeaveType>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.LeaveType.GetAllAsync();
         }
 
-        public Task<IEnumerable<LeaveType>> GetAllAsync()
+        // Get leave type by ID
+        public async Task<LeaveType?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.LeaveType.GetByIdAsync(id);
         }
 
-        public Task<LeaveType?> GetByIdAsync(int id)
+        // Add new leave type
+        public async Task<LeaveType> AddAsync(LeaveType leaveType)
         {
-            throw new NotImplementedException();
+            await _unitOfWork.LeaveType.AddAsync(leaveType);
+            await _unitOfWork.SaveChangesAsync();
+            return leaveType;
         }
 
-        public Task<bool> UpdateAsync(LeaveType leaveType)
+        // Update leave type
+        public async Task<bool> UpdateAsync(LeaveType leaveType)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _unitOfWork.LeaveType.UpdateAsync(leaveType);
+                await _unitOfWork.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var leaveType = await _unitOfWork.LeaveType.GetByIdAsync(id);
+
+            if (leaveType == null)
+                return false;
+
+            try
+            {
+                await _unitOfWork.LeaveType.DeleteAsync(leaveType);
+                await _unitOfWork.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
