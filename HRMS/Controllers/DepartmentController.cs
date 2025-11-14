@@ -177,7 +177,11 @@ namespace HRMS.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _deptService.DeleteAsync(id);
+            bool success = await _deptService.DeleteAsync(id);
+            if (!success)
+            {
+                return NotFound();
+            }
             return RedirectToAction(nameof(Index));
         }
     }

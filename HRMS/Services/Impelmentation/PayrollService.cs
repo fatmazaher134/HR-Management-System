@@ -1,5 +1,4 @@
-﻿using HRMS.ViewModels.Payroll;
-
+﻿
 namespace HRMS.Services.Impelmentation
 {
     public class PayrollService : IPayrollService
