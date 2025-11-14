@@ -1,0 +1,99 @@
+﻿@model IEnumerable<HRMS.Models.AttendanceRecord>
+
+@{
+    ViewData["Title"] = "Attendance Management";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Attendance Records</h2>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Duration</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var record in Model)
+                {
+                    var employeeName = record.Employee != null
+                        ? $"{record.Employee.FirstName} {record.Employee.LastName}"
+                        : $"(ID:{record.EmployeeID})";
+
+                    <tr>
+                        <td>@record.AttendanceID</td>
+                        <td>@employeeName</td>
+                        <td>@record.Date.ToString("yyyy-MM-dd")</td>
+                        <td>@record.CheckInTime.ToLocalTime().ToString("HH:mm:ss")</td>
+                        <td>
+                            @if (record.CheckOutTime.HasValue)
+                            {
+                                @record.CheckOutTime.Value.ToLocalTime().ToString("HH:mm:ss")
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Active</span>
+                            }
+                        </td>
+                        <td>
+                            @if (record.CheckOutTime.HasValue)
+                            {
+                                var dur = record.CheckOutTime.Value - record.CheckInTime;
+                                @($"{(int)dur.TotalHours}h {dur.Minutes}m")
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@record.AttendanceID" class="btn btn-sm btn-info">Details</a>
+                            <a asp-action="Edit" asp-route-id="@record.AttendanceID" class="btn btn-sm btn-warning">Edit</a>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("HR"))
+                            {
+                                <form asp-action="Delete" asp-route-id="@record.AttendanceID" method="post" class="d-inline delete-form">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Are you sure you want to delete this attendance record?');">
+                                        Delete
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No attendance records found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-form').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!confirm('Are you sure you want to delete this attendance record?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}
